@@ -35,6 +35,8 @@ print.mediation.test <- function(x, ...) {
                      sprintf("can reject the null for its alternative with confidence %1.3f", x$alpha),
                      sprintf("cannot reject the null for its alternative with confidence %1.3f", x$alpha))
   print(decision)
+  cat("* approximate p-value:\n")
+  print(x$pval)
   invisible()
 }
 
@@ -98,7 +100,6 @@ plot.mediation.test <- function(x, filename = NULL, ...) {
   invisible()
 }
 
-
 #' Carries out the test of the composite null "\eqn{x \times y=0}" against its
 #' alternative "\eqn{x  \times y\neq 0}"  based on  the test statistic  in the
 #' real plane.
@@ -111,10 +112,10 @@ plot.mediation.test <- function(x, filename = NULL, ...) {
 #'   is not the  inverse of an integer, then it  is automatically rounded down
 #'   to the closer inverse of an integer.
 #' 
-#' @return A  list,  consisting  of the  test  statistic,  the type-I  error
-#'   (possibly  rounded down  to  the  closer inverse  of  an  integer) and  a
-#'   logical,  \code{FALSE} if  the null  hypothesis can  be rejected  for the
-#'   alternative at level 'alpha' and \code{TRUE} otherwise.
+#'   @return  A list,  consisting  of  the test  statistic,  the type-I  error
+#'   (possibly rounded down  to the closer inverse of an  integer), a logical,
+#'   \code{FALSE} if the  null hypothesis can be rejected  for the alternative
+#'   at level 'alpha' and \code{TRUE} otherwise, and an approximate p-value.
 #'
 #' @examples
 #' (mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
@@ -132,15 +133,32 @@ mediation_test <- function(t, alpha = 0.05) {
     warning("Argument 'alpha' is not the inverse of an integer larger than 2. It has been rounded to the closer such number. New value of alpha: ",
             alpha, "= 1 /", 1/alpha, ").")
   }
-  a <- stats::qnorm(seq(0.5, 1 - alpha/2, alpha/2))
-  t1 <- max(abs(t))
-  t2 <- min(abs(t))
-  if (t1 %in% a | t2 %in% a) {
-    decision <- FALSE
-  } else {
-    decision <- t2 > a[max(which(a <= t1))]
+  make_decision <- function(tt, aalpha) {
+    qtls <- stats::qnorm(seq(0.5, 1 - aalpha/2, aalpha/2))
+    tt1 <- max(abs(tt))
+    tt2 <- min(abs(tt))
+    if (tt1 %in% qtls | tt2 %in% qtls) {
+      decision <- FALSE
+    } else {
+      decision <- tt2 > qtls[max(which(qtls <= tt1))]
+    }
+    names(decision) <- "rejection"
+    return(decision)
   }
-  out <- list(t = t, alpha = alpha, decision = decision)
+  compute_pval <- function(tt, aalpha) {
+    decision <- TRUE
+    alpha_inverse <- 1
+    while (decision) {
+      alpha_inverse <- alpha_inverse + 1
+      decision <- make_decision(tt, 1/alpha_inverse)
+    }
+    pval <- stats::runif(1, aalpha, 1/(alpha_inverse - 1))
+    names(pval) <- "p-value"
+    return(pval)
+  }
+  decision <- make_decision(t, alpha)
+  pval <- compute_pval(t, alpha)
+  out <- list(t = t, alpha = alpha, decision = decision, pval = pval)
   class(out) <- "mediation.test"
   return(out)
 }
