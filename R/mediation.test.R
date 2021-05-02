@@ -3,7 +3,7 @@
 #'
 #' The mediation.test package implements more  powerful tests of the composite
 #' null hypothesis  arising in mediation  analysis. It contains  the following
-#' functions: mediation.test, foo, bar, baz
+#' functions: mediation_test, print.mediation.test, plot.mediation.test
 #' @docType package
 #' @name mediation.test
 NULL
