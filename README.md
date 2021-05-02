@@ -35,11 +35,11 @@ Both  a   stable  version  and   a  development  version  are   available  via
 as:
 
 ```r 
-devtools::github("achambaz/mediation.test", ref = "main")
+devtools::install_github("achambaz/mediation.test", ref = "main")
 ```
 
 or 
 
 ```r 
-devtools::github("achambaz/mediation.test", ref = "develop")
+devtools::install_github("achambaz/mediation.test", ref = "develop")
 ```
