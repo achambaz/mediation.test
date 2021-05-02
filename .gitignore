@@ -1,0 +1,10 @@
+.Rhistory
+*~
+**/*~
+.R
+.benchmark
+.check
+.test
+.o
+.dll
+**/auto
