@@ -15,17 +15,21 @@ statistic in the real plane.}
 \item{alpha}{A positive \code{numeric}, the wished type-I error, which must
 be the inverse of an integer larger  than 2 (defaults to 1/20=5\%).  If it
 is not the  inverse of an integer, then it  is automatically rounded down
-to the closer inverse of an integer.
-
-@return  A list,  consisting  of  the test  statistic,  the type-I  error
+to the closer inverse of an integer.}
+}
+\value{
+A list,  consisting  of  the test  statistic,  the type-I  error
 (possibly rounded down  to the closer inverse of an  integer), a logical,
 \code{FALSE} if the  null hypothesis can be rejected  for the alternative
-at level 'alpha' and \code{TRUE} otherwise, and an approximate p-value.}
+at level 'alpha' and \code{TRUE} otherwise, and an approximate p-value.
 }
 \description{
 Carries out the test of the composite null "\eqn{x \times y=0}" against its
 alternative "\eqn{x  \times y\neq 0}"  based on  the test statistic  in the
 real plane.
+}
+\details{
+Note that the p-value is random.
 }
 \examples{
 (mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
