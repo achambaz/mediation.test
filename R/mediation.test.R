@@ -27,16 +27,18 @@ NULL
 print.mediation.test <- function(x, ...) {
   cat("Testing the composite null 'x * y = 0' against its alternative 'x * y != 0':\n")
   cat("* test statictic:\n")
-  print(x$t)
+  cat(x$t)
   cat("* wished type-I error:\n")
   print(x$alpha)
   cat("* decision:\n")
   decision <- ifelse(x$decision,
-                     sprintf("can reject the null for its alternative with confidence %1.3f", x$alpha),
-                     sprintf("cannot reject the null for its alternative with confidence %1.3f", x$alpha))
-  print(decision)
-  cat("* approximate p-value:\n")
+                     sprintf("can reject the null for its alternative with confidence %1.3f\n", x$alpha),
+                     sprintf("cannot reject the null for its alternative with confidence %1.3f\n", x$alpha))
+  cat(decision)
+  cat("* (random) approximate p-value:\n")
   print(x$pval)
+  int_pval <- sprintf("  falling deterministically in interval [%1.3f, %1.3f]\n", x$int_pval[1], x$int_pval[2])
+  cat(int_pval)
   invisible()
 }
 
@@ -147,20 +149,27 @@ mediation_test <- function(t, alpha = 0.05) {
     names(decision) <- "rejection"
     return(decision)
   }
-  compute_pval <- function(tt, aalpha) {
+  compute_pval <- function(tt) {
     decision <- TRUE
     alpha_inverse <- 1
     while (decision) {
+      pval_upper_bound <- 1/alpha_inverse
       alpha_inverse <- alpha_inverse + 1
       decision <- make_decision(tt, 1/alpha_inverse)
     }
-    pval <- stats::runif(1, aalpha, 1/(alpha_inverse - 1))
-    names(pval) <- "p-value"
-    return(pval)
+    pval_lower_bound <- 1/alpha_inverse
+    pval <- stats::runif(1, pval_lower_bound, pval_upper_bound)
+    pvals <- list(lower_bound = pval_lower_bound,
+                  pval = pval,
+                  upper_bound = pval_upper_bound)
+    return(pvals)
   }
   decision <- make_decision(t, alpha)
-  pval <- compute_pval(t, alpha)
-  out <- list(t = t, alpha = alpha, decision = decision, pval = pval)
+  pvals <- compute_pval(t)
+  
+  out <- list(t = t, alpha = alpha, decision = decision,
+              pval = pvals$pval,
+              int_pval = c(pvals$lower_bound, pvals$upper_bound))
   class(out) <- "mediation.test"
   return(out)
 }
