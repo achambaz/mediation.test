@@ -2,7 +2,7 @@
 % Please edit documentation in R/mediation.test.R
 \name{plot.mediation.test}
 \alias{plot.mediation.test}
-\title{Plots the output of \code{function} \code{mediation_test}.}
+\title{Plots the output of \code{function} \code{mediation_test} with the rejection region.}
 \usage{
 \method{plot}{mediation.test}(x, filename = NULL, ...)
 }
@@ -18,7 +18,7 @@ disk.}
 Nothing.
 }
 \description{
-Plots the output of \code{function} \code{mediation_test}.
+Plots the output of \code{function} \code{mediation_test} with the rejection region.
 }
 \examples{
 (mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))

@@ -15,7 +15,7 @@ Description: This packages proposes more powerful tests of the composite null hy
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: ggplot2, R.oo, R.utils, stats, tibble
-Suggests: 
+Imports: ggplot2, R.methodsS3, R.oo, R.utils, stats, tibble
+Suggests: plotly
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
