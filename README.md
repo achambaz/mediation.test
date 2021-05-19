@@ -11,8 +11,9 @@ of Biostatistics, Columbia University Mailman School of Public Health).
 ## Introduction
 
 The  `mediation_test()` function  of  the `mediation.test`  package tests  the
-composite  null  hypothesis <em>"x  *  y  =  0"</em> against  its  alternative
-<em>"x * y &ne; 0"</em>.
+composite  null hypothesis  <em>"&delta;<sub>x</sub>  * &delta;<sub>y</sub>  =
+0"</em> against its alternative <em>"&delta;<sub>x</sub> * &delta;<sub>y</sub>
+&ne; 0"</em>.
 
 ```r
 > library("mediation.test")
