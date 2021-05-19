@@ -18,27 +18,55 @@ NULL
 #' @return Nothing.
 #'
 #' @examples
-#' (mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
+#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' delta <- delta * cbind(epsilon, 1 - epsilon)
+#' x <- x + delta
+#' (mt <- mediation_test(x, alpha = 1/20))
 #' plot(mt)
 #' 
 #' @method print mediation.test
 #' 
 #' @export
 print.mediation.test <- function(x, ...) {
-  cat("Testing the composite null 'x * y = 0' against its alternative 'x * y != 0':\n")
+  single <- nrow(x$t) == 1
+  cat("Testing the composite null 'delta_x * delta_y = 0' against its alternative 'delta_x * delta_y != 0':\n")
   cat("* test statictic:\n")
-  print(x$t)
+  if (single) {
+    print(x$t)
+  } else {
+    print(head(x$t))
+    cat("...\n")
+  }
   cat("* wished type-I error:\n")
   print(x$alpha)
   cat("* decision:\n")
-  decision <- ifelse(x$decision,
-                     sprintf("can reject the null for its alternative with confidence %1.3f\n", x$alpha),
-                     sprintf("cannot reject the null for its alternative with confidence %1.3f\n", x$alpha))
-  cat(decision)
+  DECISION <- c(sprintf("cannot reject the null for its alternative with confidence %1.3f\n", x$alpha),
+                sprintf("can reject the null for its alternative with confidence %1.3f\n", x$alpha))
+  decision <- DECISION[x$decision + 1]
+  if (single) {
+    cat(decision)
+  } else {
+    cat(head(decision))
+    cat("...\n")
+  }
   cat("* (random) approximate p-value:\n")
-  print(x$pval)
-  int_pval <- sprintf("  falling deterministically in interval [%1.3f, %1.3f]\n", x$int_pval[1], x$int_pval[2])
-  cat(int_pval)
+  if (single) {
+    print(x$pval)
+    int_pval <- sprintf("  falling deterministically in interval [%1.3f, %1.3f]\n", x$pval_lower_bound, x$pval_upper_bound)
+    cat(int_pval)
+  } else {
+    print(head(x$pval))
+    cat("...\n")
+    cat("  falling deterministically in intervals")
+    msg <- ""
+    for (ii in 1:length(head(x$pval_lower_bound))) {
+      msg <- paste0(msg, sprintf("[%1.3f, %1.3f]\n", x$pval_lower_bound[ii], x$pval_upper_bound[ii]))
+    }
+    cat(msg)
+    cat("...\n")
+  }
   invisible()
 }
 
@@ -54,9 +82,14 @@ print.mediation.test <- function(x, ...) {
 #' @return Nothing.
 #'
 #' @examples 
-#' (mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
+#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' delta <- delta * cbind(epsilon, 1 - epsilon)
+#' x <- x + delta
+#' (mt <- mediation_test(x, alpha = 1/20))
 #' plot(mt)
-
+#'
 #' @method plot mediation.test
 #' 
 #' @export
@@ -79,7 +112,7 @@ plot.mediation.test <- function(x, filename = NULL, ...) {
                   ymin = rep(c(a, -a), 2),
                   ymax = rep(c(a[-1], Inf, -a[-1], -Inf), 2)
                 )
-  scatter_df <- tibble::tibble(Xn = x$t[1], Yn = x$t[2], decision = x$decision)
+  scatter_df <- tibble::tibble(Xn = x$t[, 1], Yn = x$t[, 2], decision = x$decision)
   ##
   fig <- ggplot2::ggplot() +
     ggplot2::geom_rect(data = df,
@@ -121,8 +154,13 @@ plot.mediation.test <- function(x, filename = NULL, ...) {
 #' 
 #' @return Nothing.
 #'
-#' @examples 
-#' (mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
+#' @examples
+#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' delta <- delta * cbind(epsilon, 1 - epsilon)
+#' x <- x + delta
+#' (mt <- mediation_test(x, alpha = 1/20))
 #' plot3d(mt)
 #'
 #' @aliases plot3d
@@ -180,8 +218,8 @@ R.methodsS3::setMethodS3(
                                               )
                                             ))
                  fig <- plotly::add_trace(fig,
-                                          x = x$t[1], y = x$t[2],
-                                          z = compute_power_surface(x$t[1], x$t[2], tib = df),
+                                          x = x$t[, 1], y = x$t[, 2],
+                                          z = compute_power_surface(x$t[, 1], x$t[, 2], tib = df),
                                           mode = "markers", type = "scatter3d", 
                                           marker = list(
                                             size = 5, color = "red", symbol = 104))
@@ -207,12 +245,14 @@ R.methodsS3::setMethodS3(
                }
              )
 
-#' Carries out the test of the composite null "\eqn{x \times y=0}" against its
-#' alternative "\eqn{x  \times y\neq 0}"  based on  the test statistic  in the
+#' Carries      out     the      test      of      the     composite      null
+#' "\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
+#' "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 #' real plane.
 #' 
 #' @param t  A  \code{vector}  consisting of  two  \code{numeric}s, the  test
-#'   statistic in the real plane.
+#'   statistic in  the real  plane, or a  'n x 2'  \code{matrix} of  such test
+#'   statistics.
 #'
 #' @param alpha A positive \code{numeric}, the wished type-I error, which must
 #'   be the inverse of an integer larger  than 2 (defaults to 1/20=5%).  If it
@@ -220,24 +260,34 @@ R.methodsS3::setMethodS3(
 #'   to the closer inverse of an integer.
 #' 
 #' @return A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
-#'   \code{numeric}s, the test statistic;} \item{alpha:}{a \code{numeric}, the
-#'   type-I  error  (possibly  rounded  down  to  the  closer  inverse  of  an
-#'   integer);}  \item{decision:}{a \code{logical},  \code{FALSE} if  the null
-#'   hypothesis  can be  rejected for  the  alternative at  level 'alpha'  and
-#'   \code{TRUE}   otherwise;}   \item{int_pval:}{a   \code{vector}   of   two
-#'   \code{numeric}s,  a lower  bound  and  an upper  bound  on the  p-value;}
-#'   \item{pval:}{a \code{numeric}, a (random) p-value drawn uniformly between
-#'   the two aforementiond bounds.}}
+#'   \code{numeric}s, the test  statistic, or a 'n x 2'  \code{matrix} of such
+#'   test  statistics;}  \item{alpha:}{a   \code{numeric},  the  type-I  error
+#'   (possibly  rounded   down  to  the   closer  inverse  of   an  integer);}
+#'   \item{decision:}{a \code{vector} of  \code{logical}s, \code{FALSE} if the
+#'   null hypothesis can be rejected for  the alternative at level 'alpha' and
+#'   \code{TRUE} otherwise;} \item{pval:}{a \code{numeric}, a (random) p-value
+#'   drawn    uniformly    between     the    two    aforementiond    bounds.}
+#'   \item{pval_lower_bound:}{a \code{vector} of lower bounds on the p-value;}
+#'   \item{pval_upper_bound:}{a \code{vector} of upper bounds on the p-value.}
+#'   }
 #'
 #' @examples
-#' (mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
+#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' delta <- delta * cbind(epsilon, 1 - epsilon)
+#' x <- x + delta
+#' (mt <- mediation_test(x, alpha = 1/20))
 #' plot(mt)
 #'
 #' @export
 mediation_test <- function(t, alpha = 0.05) {
   t <- R.utils::Arguments$getNumerics(t)
-  if (!length(t) == 2) {
-    R.oo::throw("Argument 't' should be a vector consisting of two real numbers, the test statistic in the real plane, not ", t) 
+  if (is.vector(t)) {
+    t <- matrix(t, ncol = 2)
+  }
+  if (!ncol(t) == 2) {
+    R.oo::throw("Argument 't' should be a vector consisting of two real numbers or a n x 2 matrix or data frame (the test statistic(s) in the real plane), not ", t) 
   }
   alpha <- R.utils::Arguments$getNumeric(alpha, c(0, 1/2))
   if ((1/alpha) %% 1 != 0) {
@@ -246,27 +296,43 @@ mediation_test <- function(t, alpha = 0.05) {
             alpha, "= 1 /", 1/alpha, ").")
   }
   make_decision <- function(tt, aalpha) {
-    qtls <- stats::qnorm(seq(0.5, 1 - aalpha/2, aalpha/2))
-    tt1 <- max(abs(tt))
-    tt2 <- min(abs(tt))
-    if (tt1 %in% qtls | tt2 %in% qtls) {
-      decision <- FALSE
-    } else {
-      decision <- tt2 > qtls[max(which(qtls <= tt1))]
-    }
-    names(decision) <- "rejection"
+    qtls <- stats::qnorm(seq(from = 0.5, to = 1, by = aalpha/2))
+    tt <- abs(tt)
+    int_x <- findInterval(tt[, 1], qtls)
+    int_y <- findInterval(tt[, 2], qtls)
+    decision <- (int_x == int_y)
+    names(decision) <- rep("rejection", length(decision))
     return(decision)
   }
   compute_pval <- function(tt) {
-    decision <- TRUE
-    alpha_inverse <- 1
-    while (decision) {
-      pval_upper_bound <- 1/alpha_inverse
-      alpha_inverse <- alpha_inverse + 1
-      decision <- make_decision(tt, 1/alpha_inverse)
+    decision <- rep(TRUE, nrow(tt))
+    ## start: dealing with (rare) special cases
+    special_cases <- which(tt[, 1] == tt[, 2])
+    if (length(special_cases)) {
+      decision[special_cases] <- FALSE
     }
-    pval_lower_bound <- 1/alpha_inverse
-    pval <- stats::runif(1, pval_lower_bound, pval_upper_bound)
+    ## end: dealing with (rare) special cases
+    pval_lower_bound <- rep(0, nrow(tt))
+    alpha_inverse <- 1
+    while (any(decision)) {
+      idx <- which(decision)
+      pval_ub <- 1/alpha_inverse
+      alpha_inverse <- alpha_inverse + 1
+      decision[idx] <- make_decision(tt[idx, , drop = FALSE], 1/alpha_inverse)
+      ##
+      sub_idx <- idx[which(!decision[idx])]
+      if (length(sub_idx)) {
+        pval_lower_bound[sub_idx] <- 1/alpha_inverse
+      }
+    }
+    pval_upper_bound <- 1/(1/pval_lower_bound-1)
+    pval <- stats::runif(nrow(tt), pval_lower_bound, pval_upper_bound)
+    ## start: dealing with (rare) special cases
+    decision[special_cases] <- TRUE
+    pval[special_cases] <- 0
+    pval_lower_bound[special_cases] <- 0
+    pval_upper_bound[special_cases] <- 0
+    ## end: dealing with (rare) special cases
     pvals <- list(lower_bound = pval_lower_bound,
                   pval = pval,
                   upper_bound = pval_upper_bound)
@@ -277,7 +343,8 @@ mediation_test <- function(t, alpha = 0.05) {
   
   out <- list(t = t, alpha = alpha, decision = decision,
               pval = pvals$pval,
-              int_pval = c(pvals$lower_bound, pvals$upper_bound))
+              pval_lower_bound = pvals$lower_bound,
+              pval_upper_bound = pvals$upper_bound)
   class(out) <- "mediation.test"
   return(out)
 }

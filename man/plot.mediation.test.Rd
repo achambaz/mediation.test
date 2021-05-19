@@ -21,6 +21,12 @@ Nothing.
 Plots the output of \code{function} \code{mediation_test} with the rejection region.
 }
 \examples{
-(mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
+x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
+delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
+epsilon <- stats::rbinom(10, 1, 1/2)
+delta <- delta * cbind(epsilon, 1 - epsilon)
+x <- x + delta
+(mt <- mediation_test(x, alpha = 1/20))
 plot(mt)
+
 }

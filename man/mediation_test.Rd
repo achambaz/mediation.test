@@ -2,15 +2,17 @@
 % Please edit documentation in R/mediation.test.R
 \name{mediation_test}
 \alias{mediation_test}
-\title{Carries out the test of the composite null "\eqn{x \times y=0}" against its
-alternative "\eqn{x  \times y\neq 0}"  based on  the test statistic  in the
+\title{Carries      out     the      test      of      the     composite      null
+"\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
+"\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane.}
 \usage{
 mediation_test(t, alpha = 0.05)
 }
 \arguments{
 \item{t}{A  \code{vector}  consisting of  two  \code{numeric}s, the  test
-statistic in the real plane.}
+statistic in  the real  plane, or a  'n x 2'  \code{matrix} of  such test
+statistics.}
 
 \item{alpha}{A positive \code{numeric}, the wished type-I error, which must
 be the inverse of an integer larger  than 2 (defaults to 1/20=5\%).  If it
@@ -19,22 +21,30 @@ to the closer inverse of an integer.}
 }
 \value{
 A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
-\code{numeric}s, the test statistic;} \item{alpha:}{a \code{numeric}, the
-type-I  error  (possibly  rounded  down  to  the  closer  inverse  of  an
-integer);}  \item{decision:}{a \code{logical},  \code{FALSE} if  the null
-hypothesis  can be  rejected for  the  alternative at  level 'alpha'  and
-\code{TRUE}   otherwise;}   \item{int_pval:}{a   \code{vector}   of   two
-\code{numeric}s,  a lower  bound  and  an upper  bound  on the  p-value;}
-\item{pval:}{a \code{numeric}, a (random) p-value drawn uniformly between
-the two aforementiond bounds.}}
+\code{numeric}s, the test  statistic, or a 'n x 2'  \code{matrix} of such
+test  statistics;}  \item{alpha:}{a   \code{numeric},  the  type-I  error
+(possibly  rounded   down  to  the   closer  inverse  of   an  integer);}
+\item{decision:}{a \code{vector} of  \code{logical}s, \code{FALSE} if the
+null hypothesis can be rejected for  the alternative at level 'alpha' and
+\code{TRUE} otherwise;} \item{pval:}{a \code{numeric}, a (random) p-value
+drawn    uniformly    between     the    two    aforementiond    bounds.}
+\item{pval_lower_bound:}{a \code{vector} of lower bounds on the p-value;}
+\item{pval_upper_bound:}{a \code{vector} of upper bounds on the p-value.}
+}
 }
 \description{
-Carries out the test of the composite null "\eqn{x \times y=0}" against its
-alternative "\eqn{x  \times y\neq 0}"  based on  the test statistic  in the
+Carries      out     the      test      of      the     composite      null
+"\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
+"\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane.
 }
 \examples{
-(mt <- mediation_test(c(1.1, 2.2), alpha = 1/20))
+x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
+delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
+epsilon <- stats::rbinom(10, 1, 1/2)
+delta <- delta * cbind(epsilon, 1 - epsilon)
+x <- x + delta
+(mt <- mediation_test(x, alpha = 1/20))
 plot(mt)
 
 }
