@@ -7,7 +7,7 @@
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane.}
 \usage{
-mediation_test(t, alpha = 0.05)
+mediation_test(t, alpha = 0.05, compute_pvals = TRUE)
 }
 \arguments{
 \item{t}{A  \code{vector}  consisting of  two  \code{numeric}s, the  test
@@ -18,6 +18,9 @@ statistics.}
 be the inverse of an integer larger  than 2 (defaults to 1/20=5\%).  If it
 is not the  inverse of an integer, then it  is automatically rounded down
 to the closer inverse of an integer.}
+
+\item{compute_pval}{A  \code{logical}  (defaults  to 'TRUE'),  indicating
+whether or not to compute p-values.}
 }
 \value{
 A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two

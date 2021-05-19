@@ -276,6 +276,9 @@ R.methodsS3::setMethodS3(
 #'   be the inverse of an integer larger  than 2 (defaults to 1/20=5%).  If it
 #'   is not the  inverse of an integer, then it  is automatically rounded down
 #'   to the closer inverse of an integer.
+#'
+#' @param  compute_pval A  \code{logical}  (defaults  to 'TRUE'),  indicating
+#'   whether or not to compute p-values.
 #' 
 #' @return A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
 #'   \code{numeric}s, the test  statistic, or a 'n x 2'  \code{matrix} of such
@@ -300,8 +303,9 @@ R.methodsS3::setMethodS3(
 #' plot(mt)
 #'
 #' @export
-mediation_test <- function(t, alpha = 0.05) {
+mediation_test <- function(t, alpha = 0.05, compute_pvals = TRUE) {
   t <- R.utils::Arguments$getNumerics(t)
+  compute_pvals <- R.utils::Arguments$getLogical(compute_pvals)
   if (is.vector(t)) {
     t <- matrix(t, ncol = 2)
   }
@@ -358,7 +362,13 @@ mediation_test <- function(t, alpha = 0.05) {
     return(pvals)
   }
   decision <- make_decision(t, alpha)
-  pvals <- compute_pval(t)
+  if (compute_pvals) {
+    pvals <- compute_pvals(t)
+  } else {
+    pvals <- list(lower_bound = NA,
+                  pval = NA,
+                  upper_bound = NA)
+  }
   
   out <- list(t = t, alpha = alpha, decision = decision,
               pval = pvals$pval,
