@@ -18,9 +18,10 @@ Nothing.
 Prints the output of \code{function} \code{mediation_test}.
 }
 \examples{
-x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
-delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
-epsilon <- stats::rbinom(10, 1, 1/2)
+n <- 10
+x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
+epsilon <- stats::rbinom(n, 1, 1/2)
 delta <- delta * cbind(epsilon, 1 - epsilon)
 x <- x + delta
 (mt <- mediation_test(x, alpha = 1/20))

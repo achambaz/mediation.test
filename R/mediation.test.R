@@ -18,9 +18,10 @@ NULL
 #' @return Nothing.
 #'
 #' @examples
-#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
-#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
-#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' n <- 10
+#' x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(n, 1, 1/2)
 #' delta <- delta * cbind(epsilon, 1 - epsilon)
 #' x <- x + delta
 #' (mt <- mediation_test(x, alpha = 1/20))
@@ -76,15 +77,19 @@ print.mediation.test <- function(x, ...) {
 #'
 #' @param filename  Either \code{NULL} (defaults) or a file  name to create on
 #'   disk.
+#'
+#' @param xlim,ylim  Two \code{vectors} of \code{numeric}s,  the wished x-axis
+#'   and y-axis ranges (both default to 'c(-4, 4)').
 #' 
 #' @param ... Not used.
 #' 
 #' @return Nothing.
 #'
-#' @examples 
-#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
-#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
-#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' @examples
+#' n <- 10
+#' x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(n, 1, 1/2)
 #' delta <- delta * cbind(epsilon, 1 - epsilon)
 #' x <- x + delta
 #' (mt <- mediation_test(x, alpha = 1/20))
@@ -93,10 +98,17 @@ print.mediation.test <- function(x, ...) {
 #' @method plot mediation.test
 #' 
 #' @export
-plot.mediation.test <- function(x, filename = NULL, ...) {
+plot.mediation.test <- function(x, filename = NULL, xlim = c(-4, 4), ylim = c(-4, 4), ...) {
   if (!is.null(filename)) {
     file <- R.utils::Arguments$getFilename(filename)
   }
+  xlim <- R.utils::Arguments$getNumerics(xlim)
+  ylim <- R.utils::Arguments$getNumerics(ylim)
+  if (length(xlim) != 2 | length(ylim) != 2) {
+    R.oo::throw("Arguments 'xlim' and 'ylim' must be vectors of length 2.\n")
+  }
+  xlim <- sort(xlim)
+  ylim <- sort(ylim)
   ## to please R CMD
   xmin <- NULL
   xmax <- NULL
@@ -118,19 +130,24 @@ plot.mediation.test <- function(x, filename = NULL, ...) {
     ggplot2::geom_rect(data = df,
                        ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = x$alpha),
                        alpha = 1) +
+    ggplot2::geom_point(data = scatter_df,
+                        ggplot2::aes(x = Xn, y = Yn, color = !x$decision)) +
     ggplot2::theme(legend.position = "none") +
     ggplot2::labs(x = bquote(X[n]), y = bquote(Y[n])) +
     ggplot2::geom_hline(yintercept = 0) + 
     ggplot2::geom_vline(xintercept = 0) + 
-    ggplot2::scale_x_continuous(limits = c(-4, 4), expand = c(0, 0)) +
-    ggplot2::scale_y_continuous(limits = c(-4, 4), expand = c(0, 0)) +
-    ggplot2::geom_point(data = scatter_df,
-                        ggplot2::aes(x = Xn, y = Yn, color = !x$decision)) +
+    ggplot2::scale_x_continuous(limits = xlim, expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(limits = ylim, expand = c(0, 0)) +
     ggplot2::coord_fixed()
   if (!is.null(filename)) {
     ggplot2::ggsave(fig, file = file)
   } else {
-    print(fig)
+    outside_of_range <- any(x$t[, 1] < xlim[1] | x$t[, 1] > xlim[2]) |
+      any(x$t[, 2] < ylim[1] | x$t[, 2] > ylim[2]) 
+    if (outside_of_range) {
+      message("Some points fall outside the range of the figure.\n")
+    }
+    suppressWarnings(print(fig))
   }
   invisible()
 }
@@ -155,9 +172,10 @@ plot.mediation.test <- function(x, filename = NULL, ...) {
 #' @return Nothing.
 #'
 #' @examples
-#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
-#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
-#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' n <- 10
+#' x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(n, 1, 1/2)
 #' delta <- delta * cbind(epsilon, 1 - epsilon)
 #' x <- x + delta
 #' (mt <- mediation_test(x, alpha = 1/20))
@@ -272,9 +290,10 @@ R.methodsS3::setMethodS3(
 #'   }
 #'
 #' @examples
-#' x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
-#' delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
-#' epsilon <- stats::rbinom(10, 1, 1/2)
+#' n <- 10
+#' x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(n, 1, 1/2)
 #' delta <- delta * cbind(epsilon, 1 - epsilon)
 #' x <- x + delta
 #' (mt <- mediation_test(x, alpha = 1/20))

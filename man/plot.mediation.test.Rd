@@ -4,13 +4,16 @@
 \alias{plot.mediation.test}
 \title{Plots the output of \code{function} \code{mediation_test} with the rejection region.}
 \usage{
-\method{plot}{mediation.test}(x, filename = NULL, ...)
+\method{plot}{mediation.test}(x, filename = NULL, xlim = c(-4, 4), ylim = c(-4, 4), ...)
 }
 \arguments{
 \item{x}{An output of \code{function} \code{mediation_test}.}
 
 \item{filename}{Either \code{NULL} (defaults) or a file  name to create on
 disk.}
+
+\item{xlim, ylim}{Two \code{vectors} of \code{numeric}s,  the wished x-axis
+and y-axis ranges (both default to 'c(-4, 4)').}
 
 \item{...}{Not used.}
 }
@@ -21,9 +24,10 @@ Nothing.
 Plots the output of \code{function} \code{mediation_test} with the rejection region.
 }
 \examples{
-x <- MASS::mvrnorm(10, mu = c(0, 0), Sigma = diag(c(1, 1)))
-delta <- matrix(stats::runif(20, min = -3, max = 3), ncol = 2)
-epsilon <- stats::rbinom(10, 1, 1/2)
+n <- 10
+x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
+epsilon <- stats::rbinom(n, 1, 1/2)
 delta <- delta * cbind(epsilon, 1 - epsilon)
 x <- x + delta
 (mt <- mediation_test(x, alpha = 1/20))
