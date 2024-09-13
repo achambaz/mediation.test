@@ -31,6 +31,10 @@ print.mediation.test <- function(x, ...) {
     }
     cat("* wished type-I error:\n")
     print(x$alpha)
+    cat("* user-supplied truncation parameter:\n")
+    print(x$truncation)
+    cat("* size  of the sample used to derive the  test statistic ('Inf' to use a Gaussian approximation; otherwise, use a product of Student laws):\n")
+    print(x$sample_size)    
     cat("* decision:\n")
     DECISION <- c(sprintf("cannot reject the null for its alternative with confidence %1.3f\n", x$alpha),
                   sprintf("can reject the null for its alternative with confidence %1.3f\n", x$alpha))
@@ -67,6 +71,9 @@ print.mediation.test <- function(x, ...) {
 #' @param filename  Either \code{NULL} (defaults) or a file  name to create on
 #'   disk.
 #'
+#' @param return_fig  A \code{logical}, to request that the  ggplot2 object be
+#'     returned (if 'TRUE') or not (if 'FALSE'). 
+#' 
 #' @param xlim,ylim  Two \code{vectors} of \code{numeric}s,  the wished x-axis
 #'   and y-axis ranges (both default to 'c(-4, 4)').
 #' 
@@ -87,10 +94,11 @@ print.mediation.test <- function(x, ...) {
 #' @method plot mediation.test
 #' 
 #' @export
-plot.mediation.test <- function(x, filename = NULL, xlim = c(-4, 4), ylim = c(-4, 4), ...) {
+plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c(-4, 4), ylim = c(-4, 4), ...) {
     if (!is.null(filename)) {
         file <- R.utils::Arguments$getFilename(filename)
     }
+    return_fig <- R.utils::Arguments$getLogical(return_fig)
     xlim <- R.utils::Arguments$getNumerics(xlim)
     ylim <- R.utils::Arguments$getNumerics(ylim)
     if (length(xlim) != 2 | length(ylim) != 2) {
@@ -106,7 +114,14 @@ plot.mediation.test <- function(x, filename = NULL, xlim = c(-4, 4), ylim = c(-4
     Xn <- NULL
     Yn <- NULL
     ##
-    a <- stats::qnorm(seq(.5, 1-x$alpha/2, x$alpha/2))
+    ## version < 9/13
+    ## a <- stats::qnorm(seq(.5, 1-x$alpha/2, x$alpha/2))
+    alpha_inverse <- floor(1/x$alpha)
+    a <- stats::qt(seq(from = 1 - alpha_inverse * x$alpha/2,
+                       to = 1 - alpha_inverse * x$alpha/2 + alpha_inverse * x$alpha/2,
+                       by = x$alpha/2),
+                   df = x$sample_size)
+    a <- pmax(a, x$truncation)
     df <- tibble::tibble(
                       xmin = c(rep(a, 2), rep(-a, 2)),
                       xmax = c(rep(c(a[-1], Inf), 2), rep(c(-a[-1], -Inf), 2)),
@@ -138,7 +153,11 @@ plot.mediation.test <- function(x, filename = NULL, xlim = c(-4, 4), ylim = c(-4
         }
         suppressWarnings(print(fig))
     }
-    invisible()
+    if (!return_fig) {
+        invisible()
+    } else {
+        return(fig)
+    }
 }
 
 #' Plots  the   output  of  \code{function}  \code{mediation_test}   with  the
@@ -152,7 +171,7 @@ plot.mediation.test <- function(x, filename = NULL, xlim = c(-4, 4), ylim = c(-4
 #' @param nbins_xy  An \code{integer} (chosen between 50  and 1000, defaulting
 #'   to 501), the number of bins used to discretize the along each axis.
 #'
-#' @param  range_delta_x,range_delta_y Two \code{vector}s  of \code{numeric}s
+#' @param  range_delta_x, range_delta_y Two \code{vector}s  of \code{numeric}s
 #'   describing the  ranges of \eqn{\delta_x} and  \eqn{\delta_y}. By default,
 #'   they are both set to \code{c(-6, 6)}.
 #' 
@@ -283,16 +302,19 @@ R.methodsS3::setMethodS3(
 #'     laws with 'sample_size-1' degrees of freedom.
 #' 
 #' @return A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
-#'   \code{numeric}s, the test  statistic, or a 'n x 2'  \code{matrix} of such
-#'   test  statistics;}  \item{alpha:}{a   \code{numeric},  the  type-I  error
-#'   (possibly  rounded   down  to  the   closer  inverse  of   an  integer);}
-#'   \item{decision:}{a \code{vector} of  \code{logical}s, \code{FALSE} if the
-#'   null hypothesis can be rejected for  the alternative at level 'alpha' and
-#'   \code{TRUE} otherwise;} \item{pval:}{a \code{numeric}, a (random) p-value
-#'   drawn    uniformly    between     the    two    aforementiond    bounds.}
-#'   \item{pval_lower_bound:}{a \code{vector} of lower bounds on the p-value;}
-#'   \item{pval_upper_bound:}{a \code{vector} of upper bounds on the p-value.}
-#'   }
+#'     \code{numeric}s, the test statistic, or a 'n x 2' \code{matrix} of such
+#'     test  statistics;} \item{alpha:}{a  \code{numeric}, the  type-I error;}
+#'     \item{truncation:}{a  nonnegative  \code{numeric},  used to  bound  the
+#'     rejection    region   away    from   the    null   hypothesis    space}
+#'     \item{sample_size:}{an \code{integer},  the size of the  sample used to
+#'     derive   the  test   statistic}  \item{decision:}{a   \code{vector}  of
+#'     \code{logical}s, \code{FALSE}  if the  null hypothesis can  be rejected
+#'     for  the  alternative  at  level 'alpha'  and  \code{TRUE}  otherwise;}
+#'     \item{pval:}{a  \code{numeric},  a  (random)  p-value  drawn  uniformly
+#'     between  the  two  aforementiond  bounds.}   \item{pval_lower_bound:}{a
+#'     \code{vector}     of     lower      bounds     on     the     p-value;}
+#'     \item{pval_upper_bound:}{a  \code{vector}   of  upper  bounds   on  the
+#'     p-value.}  }
 #'
 #' @examples
 #' n <- 10
@@ -315,11 +337,12 @@ mediation_test <- function(t, alpha = 0.05, truncation = 0, sample_size = Inf, c
         R.oo::throw("Argument 't' should be a vector consisting of two real numbers or a n x 2 matrix or data frame (the test statistic(s) in the real plane), not ", t) 
     }
     alpha <- R.utils::Arguments$getNumeric(alpha, c(0, 1/2))
-    if ((1/alpha) %% 1 != 0) {
-        alpha <- 1/floor(1/alpha)
-        warning("Argument 'alpha' is not the inverse of an integer larger than 2. It has been rounded to the closer such number. New value of alpha: ",
-                alpha, "= 1 /", 1/alpha, ").")
-    }
+    ## version < 9/13 
+    ## if ((1/alpha) %% 1 != 0) {
+    ##     alpha <- 1/floor(1/alpha)
+    ##     warning("Argument 'alpha' is not the inverse of an integer larger than 2. It has been rounded to the closer such number. New value of alpha: ",
+    ##             alpha, "= 1 /", 1/alpha, ").")
+    ## }
     truncation <- R.utils::Arguments$getNumeric(truncation, c(0, Inf))
     sample_size <- R.utils::Arguments$getNumeric(sample_size, c(2, Inf))
     if (!is.infinite(sample_size)) {
@@ -329,7 +352,13 @@ mediation_test <- function(t, alpha = 0.05, truncation = 0, sample_size = Inf, c
         }
     }
     make_decision <- function(tt, aalpha) {
-        qtls <- stats::qt(seq(from = 0.5, to = 1, by = aalpha/2), df = sample_size)
+        ## version < 9/13
+        ## qtls <- stats::qt(seq(from = 0.5, to = 1, by = aalpha/2), df = sample_size)
+        aalpha_inverse <- floor(1/aalpha)
+        qtls <- stats::qt(seq(from = 1 - aalpha_inverse * aalpha/2,
+                              to = 1 - aalpha_inverse * alpha/2 + aalpha_inverse * aalpha/2,
+                              by = aalpha/2),
+                          df = sample_size)
         tt <- abs(tt)
         int_x <- findInterval(tt[, 1], qtls)
         int_y <- findInterval(tt[, 2], qtls)
@@ -372,6 +401,9 @@ mediation_test <- function(t, alpha = 0.05, truncation = 0, sample_size = Inf, c
         return(pvals)
     }
     decision <- make_decision(t, alpha)
+    if (truncation > 0) {
+        decision <- decision & (apply(abs(t), 1, min) >= truncation)
+    }
     if (compute_pvals) {
         pvals <- compute_pval(t)
     } else {
@@ -380,7 +412,11 @@ mediation_test <- function(t, alpha = 0.05, truncation = 0, sample_size = Inf, c
                       upper_bound = NA)
     }
     
-    out <- list(t = t, alpha = alpha, decision = decision,
+    out <- list(t = t,
+                alpha = alpha,
+                truncation = truncation,
+                sample_size = sample_size,
+                decision = decision,
                 pval = pvals$pval,
                 pval_lower_bound = pvals$lower_bound,
                 pval_upper_bound = pvals$upper_bound)

@@ -24,7 +24,7 @@ disk. If \code{NULL}, then the plot is sent to the default web browser.}
 \item{nbins_xy}{An \code{integer} (chosen between 50  and 1000, defaulting
 to 501), the number of bins used to discretize the along each axis.}
 
-\item{range_delta_x, range_delta_y}{Two \code{vector}s  of \code{numeric}s
+\item{range_delta_x, }{range_delta_y Two \code{vector}s  of \code{numeric}s
 describing the  ranges of \eqn{\delta_x} and  \eqn{\delta_y}. By default,
 they are both set to \code{c(-6, 6)}.}
 

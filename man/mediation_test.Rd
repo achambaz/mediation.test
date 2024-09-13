@@ -41,16 +41,19 @@ whether or not to compute p-values.}
 }
 \value{
 A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
-\code{numeric}s, the test  statistic, or a 'n x 2'  \code{matrix} of such
-test  statistics;}  \item{alpha:}{a   \code{numeric},  the  type-I  error
-(possibly  rounded   down  to  the   closer  inverse  of   an  integer);}
-\item{decision:}{a \code{vector} of  \code{logical}s, \code{FALSE} if the
-null hypothesis can be rejected for  the alternative at level 'alpha' and
-\code{TRUE} otherwise;} \item{pval:}{a \code{numeric}, a (random) p-value
-drawn    uniformly    between     the    two    aforementiond    bounds.}
-\item{pval_lower_bound:}{a \code{vector} of lower bounds on the p-value;}
-\item{pval_upper_bound:}{a \code{vector} of upper bounds on the p-value.}
-}
+\code{numeric}s, the test statistic, or a 'n x 2' \code{matrix} of such
+test  statistics;} \item{alpha:}{a  \code{numeric}, the  type-I error;}
+\item{truncation:}{a  nonnegative  \code{numeric},  used to  bound  the
+rejection    region   away    from   the    null   hypothesis    space}
+\item{sample_size:}{an \code{integer},  the size of the  sample used to
+derive   the  test   statistic}  \item{decision:}{a   \code{vector}  of
+\code{logical}s, \code{FALSE}  if the  null hypothesis can  be rejected
+for  the  alternative  at  level 'alpha'  and  \code{TRUE}  otherwise;}
+\item{pval:}{a  \code{numeric},  a  (random)  p-value  drawn  uniformly
+between  the  two  aforementiond  bounds.}   \item{pval_lower_bound:}{a
+\code{vector}     of     lower      bounds     on     the     p-value;}
+\item{pval_upper_bound:}{a  \code{vector}   of  upper  bounds   on  the
+p-value.}  }
 }
 \description{
 Carries      out     the      test      of      the     composite      null

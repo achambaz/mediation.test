@@ -4,13 +4,23 @@
 \alias{plot.mediation.test}
 \title{Plots the output of \code{function} \code{mediation_test} with the rejection region.}
 \usage{
-\method{plot}{mediation.test}(x, filename = NULL, xlim = c(-4, 4), ylim = c(-4, 4), ...)
+\method{plot}{mediation.test}(
+  x,
+  filename = NULL,
+  return_fig = FALSE,
+  xlim = c(-4, 4),
+  ylim = c(-4, 4),
+  ...
+)
 }
 \arguments{
 \item{x}{An output of \code{function} \code{mediation_test}.}
 
 \item{filename}{Either \code{NULL} (defaults) or a file  name to create on
 disk.}
+
+\item{return_fig}{A \code{logical}, to request that the  ggplot2 object be
+returned (if 'TRUE') or not (if 'FALSE').}
 
 \item{xlim, ylim}{Two \code{vectors} of \code{numeric}s,  the wished x-axis
 and y-axis ranges (both default to 'c(-4, 4)').}
