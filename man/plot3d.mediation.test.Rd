@@ -45,6 +45,8 @@ epsilon <- stats::rbinom(n, 1, 1/2)
 delta <- delta * cbind(epsilon, 1 - epsilon)
 x <- x + delta
 (mt <- mediation_test(x, alpha = 1/20))
-plot3d(mt)
-
+show.3Dplot <- FALSE # change to 'TRUE' to make and show the 3D plot
+if (show.3Dplot) {
+  plot3d(mt)
+}
 }

@@ -1,7 +1,7 @@
 Package: mediation.test
 Title: More Powerful Tests of the Composite Null Hypothesis Arising in Mediation Analysis
-Version: 1.0.0
-Published: 18/05/2021
+Version: 1.1.0
+Published: 12/09/2024
 Authors@R: c(
     person(given = "Antoine",
            family = "Chambaz",
@@ -15,7 +15,14 @@ Description: This packages proposes more powerful tests of the composite null hy
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: ggplot2, R.methodsS3, R.oo, R.utils, stats, tibble
+Imports: 
+    ggplot2,
+    R.methodsS3,
+    R.oo,
+    R.utils,
+    stats,
+    tibble,
+    utils
 Suggests: MASS, plotly
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.1

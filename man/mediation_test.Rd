@@ -7,7 +7,13 @@
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane.}
 \usage{
-mediation_test(t, alpha = 0.05, compute_pvals = TRUE)
+mediation_test(
+  t,
+  alpha = 0.05,
+  truncation = 0,
+  sample_size = Inf,
+  compute_pvals = TRUE
+)
 }
 \arguments{
 \item{t}{A  \code{vector}  consisting of  two  \code{numeric}s, the  test
@@ -19,7 +25,18 @@ be the inverse of an integer larger  than 2 (defaults to 1/20=5\%).  If it
 is not the  inverse of an integer, then it  is automatically rounded down
 to the closer inverse of an integer.}
 
-\item{compute_pval}{A  \code{logical}  (defaults  to 'TRUE'),  indicating
+\item{truncation}{A nonnegative  \code{numeric} used to bound the rejection
+region away  from the null  hypothesis space.  Defaults to 0,  in which
+case the  rejection region is minimax optimal.}
+
+\item{sample_size}{An \code{integer}  (larger than  one), the size  of the
+sample used  to derive the  test statistic. Defaults to  'Inf', meaning
+that, under the  null hypothesis, the test statistic is  drawn from the
+\eqn{N_2(0,I_2)} law.  If  the integer is finite, then,  under the null
+hypothesis, the test statistic is drawn from the product of two Student
+laws with 'sample_size-1' degrees of freedom.}
+
+\item{compute_pvals}{A  \code{logical}  (defaults  to 'TRUE'),  indicating
 whether or not to compute p-values.}
 }
 \value{
