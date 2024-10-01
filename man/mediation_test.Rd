@@ -7,23 +7,14 @@
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane.}
 \usage{
-mediation_test(
-  t,
-  alpha = 0.05,
-  truncation = 0,
-  sample_size = Inf,
-  compute_pvals = TRUE
-)
+mediation_test(t, alpha = 0.05, truncation = 0, sample_size = Inf)
 }
 \arguments{
 \item{t}{A  \code{vector}  consisting of  two  \code{numeric}s, the  test
 statistic in  the real  plane, or a  'n x 2'  \code{matrix} of  such test
 statistics.}
 
-\item{alpha}{A positive \code{numeric}, the wished type-I error, which must
-be the inverse of an integer larger  than 2 (defaults to 1/20=5\%).  If it
-is not the  inverse of an integer, then it  is automatically rounded down
-to the closer inverse of an integer.}
+\item{alpha}{A positive \code{numeric}, the wished type-I error.}
 
 \item{truncation}{A nonnegative  \code{numeric} used to bound the rejection
 region away  from the null  hypothesis space.  Defaults to 0,  in which
@@ -35,9 +26,6 @@ that, under the  null hypothesis, the test statistic is  drawn from the
 \eqn{N_2(0,I_2)} law.  If  the integer is finite, then,  under the null
 hypothesis, the test statistic is drawn from the product of two Student
 laws with 'sample_size-1' degrees of freedom.}
-
-\item{compute_pvals}{A  \code{logical}  (defaults  to 'TRUE'),  indicating
-whether or not to compute p-values.}
 }
 \value{
 A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
@@ -49,17 +37,19 @@ rejection    region   away    from   the    null   hypothesis    space}
 derive   the  test   statistic}  \item{decision:}{a   \code{vector}  of
 \code{logical}s, \code{FALSE}  if the  null hypothesis can  be rejected
 for  the  alternative  at  level 'alpha'  and  \code{TRUE}  otherwise;}
-\item{pval:}{a  \code{numeric},  a  (random)  p-value  drawn  uniformly
-between  the  two  aforementiond  bounds.}   \item{pval_lower_bound:}{a
-\code{vector}     of     lower      bounds     on     the     p-value;}
-\item{pval_upper_bound:}{a  \code{vector}   of  upper  bounds   on  the
-p-value.}  }
+\item{pval:}{a \code{vector}  of \code{numeric}s,  the p-values  of the
+tests.}  }
 }
 \description{
 Carries      out     the      test      of      the     composite      null
 "\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane.
+}
+\details{
+For details, we refer  to the technical report  "Optimal Tests of
+the Composite Null Hypothesis Arising in Mediation Analysis", by
+Miles & Chambaz (2021), https://arxiv.org/abs/2107.07575
 }
 \examples{
 n <- 10

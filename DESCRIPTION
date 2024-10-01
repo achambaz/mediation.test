@@ -23,6 +23,6 @@ Imports:
     stats,
     tibble,
     utils
-Suggests: MASS, plotly
+Suggests: MASS
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
