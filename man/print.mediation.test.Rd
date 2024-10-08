@@ -2,12 +2,12 @@
 % Please edit documentation in R/mediation.test.R
 \name{print.mediation.test}
 \alias{print.mediation.test}
-\title{Prints the output of \code{function} \code{mediation_test}.}
+\title{Prints the output of \code{function}s \code{mediation_test_minimax} and \code{mediation_test_Bayes}.}
 \usage{
 \method{print}{mediation.test}(x, ...)
 }
 \arguments{
-\item{x}{An output of \code{function} \code{mediation_test}.}
+\item{x}{An output of \code{function} \code{mediation_test_minimax} or \code{mediation_test_Bayes}.}
 
 \item{...}{Not used.}
 }
@@ -15,7 +15,7 @@
 Nothing.
 }
 \description{
-Prints the output of \code{function} \code{mediation_test}.
+Prints the output of \code{function}s \code{mediation_test_minimax} and \code{mediation_test_Bayes}.
 }
 \examples{
 n <- 10
@@ -24,7 +24,7 @@ delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
 epsilon <- stats::rbinom(n, 1, 1/2)
 delta <- delta * cbind(epsilon, 1 - epsilon)
 x <- x + delta
-(mt <- mediation_test(x, alpha = 1/20))
+(mt <- mediation_test_minimax(x, alpha = 1/20))
 plot(mt)
 
 }

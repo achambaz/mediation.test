@@ -2,7 +2,7 @@
 % Please edit documentation in R/mediation.test.R
 \name{plot.mediation.test}
 \alias{plot.mediation.test}
-\title{Plots the output of \code{function} \code{mediation_test} with the rejection region.}
+\title{Plots the output of \code{function} \code{mediation_test_minimax} with the rejection region.}
 \usage{
 \method{plot}{mediation.test}(
   x,
@@ -14,12 +14,12 @@
 )
 }
 \arguments{
-\item{x}{An output of \code{function} \code{mediation_test}.}
+\item{x}{An output of \code{function} \code{mediation_test_minimax}.}
 
 \item{filename}{Either \code{NULL} (defaults) or a file  name to create on
 disk.}
 
-\item{return_fig}{A \code{logical}, to request that the  ggplot2 object be
+\item{return_fig}{A \code{logical}, to request that the  'ggplot2' object be
 returned (if 'TRUE') or not (if 'FALSE').}
 
 \item{xlim, ylim}{Two \code{vectors} of \code{numeric}s,  the wished x-axis
@@ -28,10 +28,10 @@ and y-axis ranges (both default to 'c(-4, 4)').}
 \item{...}{Not used.}
 }
 \value{
-Nothing.
+Nothing unless 'return_fig' is set to 'TRUE', in which case the function returns the 'ggplot2' object.
 }
 \description{
-Plots the output of \code{function} \code{mediation_test} with the rejection region.
+Plots the output of \code{function} \code{mediation_test_minimax} with the rejection region.
 }
 \examples{
 n <- 10
@@ -40,7 +40,7 @@ delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
 epsilon <- stats::rbinom(n, 1, 1/2)
 delta <- delta * cbind(epsilon, 1 - epsilon)
 x <- x + delta
-(mt <- mediation_test(x, alpha = 1/20))
+(mt <- mediation_test_minimax(x, alpha = 1/20))
 plot(mt)
 
 }
