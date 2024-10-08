@@ -65,9 +65,9 @@ print.mediation.test <- function(x, ...) {
     invisible()
 }
 
-#' Plots the output of \code{function} \code{mediation_test_minimax} with the rejection region. 
+#' Plots the output of \code{function}s \code{mediation_test_minimax} and \code{mediation_test_Bayes} with the rejection region. 
 #' 
-#' @param x An output of \code{function} \code{mediation_test_minimax}.
+#' @param x An output of \code{function}s \code{mediation_test_minimax} or \code{mediation_test_Bayes}.
 #'
 #' @param filename  Either \code{NULL} (defaults) or a file  name to create on
 #'   disk.
@@ -118,10 +118,6 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
     if (x$method == "minimax") {
         alpha <- x$alpha
         alpha_inverse <- floor(1/alpha)
-        ## a <- stats::qt(seq(from = 1 - alpha_inverse * x$alpha/2,
-        ##                    to = 1 - alpha_inverse * x$alpha/2 + alpha_inverse * x$alpha/2,
-        ##                    by = x$alpha/2),
-        ##                df = x$sample_size)
         a <- stats::qt(seq(from = 1 - alpha_inverse * alpha/2,
                            to = 1 - alpha_inverse * alpha/2 + alpha_inverse * alpha/2,
                            by = alpha/2),
@@ -458,7 +454,7 @@ plot.map.rejection.probabilities <- function(x, filename = NULL, return_fig = FA
     ## to please R CMD
     delta_x <- NULL
     delta_y <- NULL
-    prob <- NULL
+    probs <- NULL
     
     df <- tidyr::expand_grid(
                      delta_x = r_xy,
@@ -603,6 +599,10 @@ compute_map_rejection_probs <- function(alpha = 0.05, K = 16, loss = c("0-1", "q
 #' @param map  The "map" of rejection  probabilities -- the 'map'  item of the
 #'     output of function \code{compute_map_rejection_probs}.
 #'
+#' @param truncation A nonnegative  \code{numeric} used to bound the rejection
+#'     region away  from the null  hypothesis space.  Defaults to 0,  in which
+#'     case the  rejection region is minimax optimal.
+#' 
 #' @details For details, we refer  to the technical report  "Optimal Tests of
 #'     the Composite Null Hypothesis Arising in Mediation Analysis", by
 #'     Miles & Chambaz (2021), https://arxiv.org/abs/2107.07575 
@@ -631,8 +631,11 @@ compute_map_rejection_probs <- function(alpha = 0.05, K = 16, loss = c("0-1", "q
 #' plot(mt)
 #'
 #' @export
-mediation_test_Bayes <- function(t, map = map_01_0.05, truncation = 0) {
+mediation_test_Bayes <- function(t, map, truncation = 0) {
     t <- R.utils::Arguments$getNumerics(t)
+    if (!inherits(map, "map.rejection.probabilities")) {
+        R.oo::throw("Argument 'map' should be an output of function 'compute_map_rejection_probs', not ", map) 
+    }
     truncation <- R.utils::Arguments$getNumeric(truncation, c(0, Inf))
     if (is.vector(t)) {
         t <- matrix(t, ncol = 2)
@@ -646,7 +649,7 @@ mediation_test_Bayes <- function(t, map = map_01_0.05, truncation = 0) {
     ##
     make_decision <- function(tt, aalpha, mmap) {
         K <- ncol(mmap)/2
-        B <- 2 * qnorm(1 - aalpha/2)
+        B <- 2 * stats::qnorm(1 - aalpha/2)
         abstt <- abs(tt)
         max_abstt <- pmax(abstt[, 1], abstt[, 2])
         min_abstt <- pmin(abstt[, 1], abstt[, 2])
@@ -656,7 +659,7 @@ mediation_test_Bayes <- function(t, map = map_01_0.05, truncation = 0) {
         if (length(idx) >= 1) {
             ij <- cbind(ceiling((tt[idx, 1] + B) * K/B),
                         ceiling((tt[idx, 2] + B) * K/B))
-            decision[idx] <- as.logical(rbinom(length(idx), 1, map[ij]))
+            decision[idx] <- as.logical(stats::rbinom(length(idx), 1, map[ij]))
         }
         names(decision) <- rep("rejection", length(decision))
         return(decision)

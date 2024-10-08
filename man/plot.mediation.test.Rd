@@ -2,7 +2,7 @@
 % Please edit documentation in R/mediation.test.R
 \name{plot.mediation.test}
 \alias{plot.mediation.test}
-\title{Plots the output of \code{function} \code{mediation_test_minimax} with the rejection region.}
+\title{Plots the output of \code{function}s \code{mediation_test_minimax} and \code{mediation_test_Bayes} with the rejection region.}
 \usage{
 \method{plot}{mediation.test}(
   x,
@@ -14,7 +14,7 @@
 )
 }
 \arguments{
-\item{x}{An output of \code{function} \code{mediation_test_minimax}.}
+\item{x}{An output of \code{function}s \code{mediation_test_minimax} or \code{mediation_test_Bayes}.}
 
 \item{filename}{Either \code{NULL} (defaults) or a file  name to create on
 disk.}
@@ -31,7 +31,7 @@ and y-axis ranges (both default to 'c(-4, 4)').}
 Nothing unless 'return_fig' is set to 'TRUE', in which case the function returns the 'ggplot2' object.
 }
 \description{
-Plots the output of \code{function} \code{mediation_test_minimax} with the rejection region.
+Plots the output of \code{function}s \code{mediation_test_minimax} and \code{mediation_test_Bayes} with the rejection region.
 }
 \examples{
 n <- 10
