@@ -28,7 +28,8 @@
 #'     'lpSolve::lp' used to determine the  probabilities.
 #'
 #' @examples
-#' (map_01_0.05) ## one of the four outputs of 'compute_map_rejection_probs' stored in the package
+#' ## one of the four outputs of 'compute_map_rejection_probs' stored in the package
+#' head(map_01_0.05, c(5, 5)) 
 #' map <- compute_map_rejection_probs(alpha = 0.05, K = 16, loss = "0-1")
 #' plot(map)
 #' 

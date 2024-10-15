@@ -11,7 +11,13 @@ The `mediation_test()` function of the `mediation.test` package tests the compos
 
 ```r
 > library("mediation.test")
-> example(mediation_test)
+>
+> example(mediation_test_minimax)
+> example(BH_mediation_test_minimax)
+>
+> example(compute_map_rejection_probs)
+> example(mediation_test_Bayes)
+
 ```
 
 ## Citation
