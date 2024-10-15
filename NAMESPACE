@@ -3,6 +3,7 @@
 S3method(plot,map.rejection.probabilities)
 S3method(plot,mediation.test)
 S3method(print,mediation.test)
+export(BH_mediation_test_minimax)
 export(compute_map_rejection_probs)
 export(mediation_test_Bayes)
 export(mediation_test_minimax)
