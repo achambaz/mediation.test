@@ -12,6 +12,7 @@ compute_map_rejection_probs(
   alpha = 0.05,
   K = 16,
   loss = c("0-1", "quadratic"),
+  truncation = 0,
   return_solver = FALSE
 )
 }
@@ -27,6 +28,10 @@ as a sensible value and enforce \eqn{2 \leq K \leq 128}.}
 
 \item{loss}{A  \code{character},   either  "0-1"  (default   value)  or
 "quadratic", to indicate which loss function to consider.}
+
+\item{truncation}{A nonnegative  \code{numeric}, enabling to bound away the
+rejection region from  the null hypothesis space. Its  default value is
+0, meaning that no truncation is required.}
 
 \item{return_solver}{A \code{logical}, to request that the 'lpSolve' object
 be returned  (if 'TRUE') or  not (if  'FALSE', default). Note  that the

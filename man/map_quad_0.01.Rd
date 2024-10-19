@@ -7,7 +7,7 @@
 composite null  "\eqn{\delta_x \times \delta_y=0}" against  its alternative
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane that is induced by the quadratic loss function for a 0.01 type-I
-error.}
+error. No truncation required.}
 \format{
 \subsection{\code{map_quad_0.01}}{
 
@@ -22,6 +22,6 @@ The map of  rejection probabilities for the Bayes risk  optimal test of the
 composite null  "\eqn{\delta_x \times \delta_y=0}" against  its alternative
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane that is induced by the quadratic loss function for a 0.01 type-I
-error.
+error. No truncation required.
 }
 \keyword{datasets}

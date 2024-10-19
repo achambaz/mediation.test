@@ -42,12 +42,10 @@ print.mediation.test <- function(x, ...) {
         if (method == "minimax") {
             print(x$alpha)
         } else if (method == "Bayes") {
-            alpha <- stringr::str_extract(attr(x$map, "info"), "[0-9\\.]+$")
-            alpha <- as.numeric(alpha)
-            cat("* wished type-I error:\n")
-            print(x$alpha)
+            alpha <- attr(x$map, "alpha")
+            print(alpha)
             cat("* loss function:\n")
-            loss <- stringr::str_extract(attr(x$map, "info"), "^[^;]+")
+            loss <- attr(x$map, "loss")
             print(loss)
         }
     } else if (length(method) == 2) {
@@ -58,6 +56,13 @@ print.mediation.test <- function(x, ...) {
     }
     cat("* user-supplied truncation parameter:\n")
     print(x$truncation)
+    if (method[1] == "Bayes") {
+        if (x$truncation != attr(x$map, "truncation")) {
+            wrnng <- sprintf("warning: used a truncation parameter (%.3f) different the map's truncation parameter (%.3f)",
+                             x$truncation, attr(x$map, "truncation"))
+            print(wrnng)
+        }
+    }
     if (method[1] == "minimax") {
         cat("* size  of the sample used to derive the  test statistic ('Inf' to use a Gaussian approximation; otherwise, use a product of Student laws):\n")
         print(x$sample_size)
@@ -169,6 +174,16 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
             ggplot2::ggtitle("Minimax optimal test",
                              subtitle = msg)
     } else if (method[1] == "Bayes") {
+        loss <- attr(x$map, "loss")
+        alpha <- attr(x$map, "alpha")
+        alpha <- as.numeric(alpha)
+        truncation <- attr(x$map, "truncation")
+        if (truncation == 0) {
+            msg <- sprintf("%s loss; type-I error: %.3f; no truncation", loss, alpha)
+        } else {
+            msg <- sprintf("%s loss; type-I error: %.3f; truncation: %.3f", loss, alpha, truncation)
+        }
+        ##
         scatter_df <- tibble::tibble(Xn = x$t[, 1], Yn = x$t[, 2], decision = x$decision)
         fig <- plot(x$map, return_fig = TRUE)
         fig <- fig +
@@ -181,8 +196,7 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
             ggplot2::scale_x_continuous(limits = xlim, expand = c(0, 0)) +
             ggplot2::scale_y_continuous(limits = ylim, expand = c(0, 0)) +
             ggplot2::ggtitle("Bayes risk optimal test",
-                             subtitle = paste0(attr(x$map, "info"), "; ",
-                                              sprintf("truncation: %.3f", x$truncation)))
+                             subtitle = msg)
     } else {## should never happen
         R.oo::throw("Argument 'method' should be either 'minimax' or 'minimax+BH' or 'Bayes', not ", x$method)         
     }
@@ -235,12 +249,19 @@ plot.map.rejection.probabilities <- function(x, filename = NULL, return_fig = FA
     return_fig <- R.utils::Arguments$getLogical(return_fig)
     ##
     K <- nrow(x)/2
-    msg <- attr(x, "info")
-    alpha <- stringr::str_extract(msg, "[0-9\\.]+$")
+    loss <- attr(x, "loss")
+    alpha <- attr(x, "alpha")
     alpha <- as.numeric(alpha)
+    truncation <- attr(x, "truncation")
+    if (truncation == 0) {
+        msg <- sprintf("%s loss; type-I error: %.3f; no truncation", loss, alpha)
+    } else {
+        msg <- sprintf("%s loss; type-I error: %.3f; truncation: %.3f", loss, alpha, truncation)
+    }
+    ##
     B <- 2 * stats::qnorm(1 - alpha / 2)
     r_xy <- seq(-B, B, length.out = 2 * K)
-    sbttl <- sprintf("(restricted to [%.3f,%.3f])", -B, B)
+    sbttl <- sprintf("(restricted to [%.3f,%.3f])\n", -B, B)
     ##
     ## to please R CMD
     delta_x <- NULL
@@ -262,7 +283,7 @@ plot.map.rejection.probabilities <- function(x, filename = NULL, return_fig = FA
         ggplot2::geom_vline(xintercept = 0) + 
         ggplot2::coord_fixed() +
         ggplot2::ggtitle("Map of rejection probabilities",
-                         subtitle = paste(msg, sbttl)) +
+                         subtitle = paste(sbttl, msg)) +
         ggplot2::guides(fill = ggplot2::guide_legend(title = "rejection\nprob."))
     if (!is.null(filename)) {
         ggplot2::ggsave(fig, file = file)

@@ -54,9 +54,7 @@ mediation_test_Bayes <- function(t, map, truncation = 0) {
     if (!ncol(t) == 2) {
         R.oo::throw("Argument 't' should be a vector consisting of two real numbers or a n x 2 matrix or data frame (the test statistic(s) in the real plane), not ", t) 
     }
-    msg <- attr(map, "info")
-    alpha <- stringr::str_extract(msg, "[0-9\\.]+$")
-    alpha <- as.numeric(alpha)
+    alpha <- attr(map, "alpha")
     ##
     make_decision <- function(tt, aalpha, mmap) {
         K <- ncol(mmap)/2
