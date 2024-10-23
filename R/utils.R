@@ -2,6 +2,8 @@
 #' 
 #' @param x An output of \code{function} \code{mediation_test_minimax} or \code{mediation_test_Bayes}.
 #'
+#' @param n An \code{integer} indicating how many individual tests should be printed.
+#' 
 #' @param ... Not used.
 #' 
 #' @return Nothing.
@@ -19,21 +21,29 @@
 #' @method print mediation.test
 #' 
 #' @export
-print.mediation.test <- function(x, ...) {
-    single <- nrow(x$t) == 1
+print.mediation.test <- function(x, n = 6L, ...) {
+    nr <- nrow(x$t)
+    single <- (nr == 1)
     cat("Testing the composite null 'delta_x * delta_y = 0' against its alternative 'delta_x * delta_y != 0':\n")
     cat("* method:\n")
-    method <- stringr::str_split(x$method, "\\+")[[1]]
+    method <- stringr::str_split(x$method, "\\_")[[1]]
     if (length(method) == 1) {## "minimax" or "Bayes"
         cat(method, "\n")
     } else if (length(method) == 2){## "minimax" and "BH"
-        cat("minimax & Benjamini-Hochberg procedure\n")
+        what <- switch(x$BH,
+                       "statistics" = "the test statistics",
+                       "pval" = "the (conservative) p-values")
+        msg <- sprintf("minimax & Benjamini-Hochberg procedure based on _%s_\n", what)
+        cat(msg)
     } else {
         R.oo::throw("Item 'method' should be either 'minimax' or 'minimax+BH' or 'Bayes', not ", x$method) 
     }
     cat("* test statictic:\n")
     if (!single) {
-        print(utils::head(x$t))
+        print(utils::head(x$t, n))
+        if (nr > n) {
+            cat("...\n")
+        }
     } else {
         print(x$t)
     }
@@ -52,32 +62,32 @@ print.mediation.test <- function(x, ...) {
         cat("* wished false discovery rate:\n")
         print(x$alpha)
     } else {
-        R.oo::throw("Item 'method' should be either 'minimax' or 'minimax+BH' or 'Bayes', not ", x$method) 
+        R.oo::throw("Item 'method' should be either 'minimax' or 'minimax_BH' or 'Bayes', not ", x$method) 
     }
     cat("* user-supplied truncation parameter:\n")
     print(x$truncation)
     if (method[1] == "Bayes") {
         if (x$truncation != attr(x$map, "truncation")) {
-            wrnng <- sprintf("warning: used a truncation parameter (%.3f) different the map's truncation parameter (%.3f)",
+            wrnng <- sprintf("warning: used a truncation parameter (%.3f) different from the map's truncation parameter (%.3f)\n",
                              x$truncation, attr(x$map, "truncation"))
-            print(wrnng)
+            cat(wrnng)
         }
     }
     if (method[1] == "minimax") {
         cat("* size  of the sample used to derive the  test statistic ('Inf' to use a Gaussian approximation; otherwise, use a product of Student laws):\n")
         print(x$sample_size)
     }
-    cat("* decision:\n")
+    cat(sprintf("* decision [%i rejection(s) overall]: \n", sum(x$decision)))
     DECISION <- c(sprintf("cannot reject the null for its alternative with confidence %1.3f\n", x$alpha),
                   sprintf("can reject the null for its alternative with confidence %1.3f\n", x$alpha))
     decision <- DECISION[x$decision + 1]
-    cat(utils::head(decision))
-    if (!single) {
+    cat(utils::head(decision, n))
+    if (nr > n) {
         cat("...\n")
     }
-    cat("* p-value:\n")
-    print(utils::head(x$pval))
-    if (!single) {
+    cat("* (conservative) p-value:\n")
+    print(utils::head(x$pval, n))
+    if (nr > n) {
         cat("...\n")
     }
     invisible()
@@ -133,7 +143,7 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
     Xn <- NULL
     Yn <- NULL
     ##
-    method <- stringr::str_split(x$method, "\\+")[[1]]
+    method <- stringr::str_split(x$method, "\\_")[[1]]
     if (method[1] == "minimax") {
         alpha <- x$alpha
         alpha_inverse <- floor(1/alpha)
@@ -153,9 +163,15 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
         if (length(method) == 1) {
             msg <- sprintf("type-I error: %.3f; truncation: %.3f", alpha, x$truncation)
         } else if (length(method) == 2) {
-            msg <- sprintf("false discovery rate: %.3f (standard BH procedure); truncation: %.3f", alpha, x$truncation)
+            if (x$BH == "statistics") {
+                msg <- sprintf("FDR: %.3f (BH procedure based on test statistics); truncation: %.3f", alpha, x$truncation)
+            } else if (x$BH == "pval") {
+                msg <- sprintf("FDR: %.3f (BH procedure based on conservative p-values); truncation: %.3f", alpha, x$truncation)
+            } else {
+                R.oo::throw("Item 'BH' should be either 'statistics' or 'pval', not ", x$BH) 
+            }
         } else {
-            R.oo::throw("Item 'method' should be either 'minimax' or 'minimax+BH' or 'Bayes', not ", x$method) 
+            R.oo::throw("Item 'method' should be either 'minimax' or 'minimax_BH' or 'Bayes', not ", x$method) 
         }
         ##
         fig <- ggplot2::ggplot() +
@@ -198,7 +214,7 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
             ggplot2::ggtitle("Bayes risk optimal test",
                              subtitle = msg)
     } else {## should never happen
-        R.oo::throw("Argument 'method' should be either 'minimax' or 'minimax+BH' or 'Bayes', not ", x$method)         
+        R.oo::throw("Argument 'method' should be either 'minimax' or 'minimax_BH' or 'Bayes', not ", x$method)         
     }
     if (!is.null(filename)) {
         ggplot2::ggsave(fig, file = file)

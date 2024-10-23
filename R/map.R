@@ -96,25 +96,30 @@ compute_map_rejection_probs <- function(alpha = 0.05, K = 16, loss = c("0-1", "q
         R.oo::throw("Argument 'loss' should be either '0-1' or 'quadratic', not ", loss) 
     }
 
-    full_map <- lpSolve::lp(direction = "max",
-                            objective.in = as.vector(risk),
-                            const.mat = const.mat, 
-                            const.dir = const.dir,
-                            const.rhs = const.rhs,
-                            transpose.constraints = FALSE)
-    
-    map <- matrix(pmin(1, pmax(0, full_map$solution)),
-                  nrow = 2 * K, ncol = 2 * K)
+    if (!return_solver) {
+        map <- lpSolve::lp(direction = "max",
+                           objective.in = as.vector(risk),
+                           const.mat = const.mat, 
+                           const.dir = const.dir,
+                           const.rhs = const.rhs,
+                           transpose.constraints = FALSE)$solution
+        map <- matrix(pmin(1, pmax(0, map)), nrow = 2 * K, ncol = 2 * K)
+        attr(map, "solver") <- NA
+    } else {
+        full_map <- lpSolve::lp(direction = "max",
+                                objective.in = as.vector(risk),
+                                const.mat = const.mat, 
+                                const.dir = const.dir,
+                                const.rhs = const.rhs,
+                                transpose.constraints = FALSE)
+        map <- matrix(pmin(1, pmax(0, full_map$solution)),
+                      nrow = 2 * K, ncol = 2 * K)
+        attr(map, "solver") <- full_map
+    }
     attr(map, "loss") <- loss
     attr(map, "alpha") <- alpha
     attr(map, "truncation") <- truncation
     class(map) <- "map.rejection.probabilities"
-
-    if (!return_solver) {
-        attr(map, "solver") <- NA
-    } else {
-        attr(map, "solver") <- full_map
-    }
     
     return(map)
 }

@@ -7,7 +7,13 @@
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane.}
 \usage{
-mediation_test_minimax(t, alpha = 0.05, truncation = 0, sample_size = Inf)
+mediation_test_minimax(
+  t,
+  alpha = 0.05,
+  truncation = 0,
+  sample_size = Inf,
+  compute_pvals = TRUE
+)
 }
 \arguments{
 \item{t}{A  \code{vector}  consisting of  two  \code{numeric}s, the  test
@@ -26,6 +32,9 @@ that, under the  null hypothesis, the test statistic is  drawn from the
 \eqn{N_2(0,I_2)} law.  If  the integer is finite, then,  under the null
 hypothesis, the test statistic is drawn from the product of two Student
 laws with 'sample_size-1' degrees of freedom.}
+
+\item{compute_pvals}{A   \code{logical}  indicating   whether  or   not
+(conservative) p-values should be computed.}
 }
 \value{
 A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
@@ -37,8 +46,8 @@ rejection    region   away    from   the    null   hypothesis    space}
 derive   the  test   statistic}  \item{decision:}{a   \code{vector}  of
 \code{logical}s, \code{FALSE}  if the  null hypothesis can  be rejected
 for  the  alternative  at  level 'alpha'  and  \code{TRUE}  otherwise;}
-\item{pval:}{a \code{vector}  of \code{numeric}s,  the p-values  of the
-tests;} \item{method:}{the \code{character} "minimax".} }
+\item{pval:}{a \code{vector}  of \code{numeric}s,  the (conservative)
+p-values  of the tests;} \item{method:}{the \code{character} "minimax".}}
 }
 \description{
 Carries   out   the   minimax   optimal  test   of   the   composite   null
@@ -49,19 +58,20 @@ real plane.
 \details{
 For details, we refer  to the technical report  "Optimal Tests of
 the Composite Null Hypothesis Arising in Mediation Analysis", by
-Miles & Chambaz (2021), https://arxiv.org/abs/2107.07575
+Miles & Chambaz (2024), https://arxiv.org/abs/2107.07575
 }
 \examples{
 n <- 10
-x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
-delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
-epsilon <- stats::rbinom(n, 1, 1/2)
-delta <- delta * cbind(epsilon, 1 - epsilon)
+x <- MASS::mvrnorm(2 * n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+delta <- matrix(stats::runif(4 * n, min = -3, max = 3), ncol = 2)
+epsilon <- stats::rbinom(n, size = 1, prob = 1/2)
+delta <- delta * cbind(c(epsilon, rep(1, n)),
+                       c(1 - epsilon, rep(1, n)))
 x <- x + delta
 (mt <- mediation_test_minimax(x, alpha = 1/20))
 plot(mt)
 
 }
 \seealso{
-\code{\link[=BH_mediation_test_minimax]{BH_mediation_test_minimax()}}, which builds upon the present function to implement a Benjamini-Hochberg procedure to control false discovery rate.
+\code{\link[=mediation_test_minimax_BH]{mediation_test_minimax_BH()}}, which builds upon the present function to implement a Benjamini-Hochberg procedure to control false discovery rate.
 }

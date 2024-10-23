@@ -16,7 +16,7 @@
 #' 
 #' @details For details, we refer  to the technical report  "Optimal Tests of
 #'     the Composite Null Hypothesis Arising in Mediation Analysis", by
-#'     Miles & Chambaz (2021), https://arxiv.org/abs/2107.07575 
+#'     Miles & Chambaz (2024), https://arxiv.org/abs/2107.07575 
 #' 
 #' @return A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
 #'     \code{numeric}s, the test statistic, or a 'n x 2' \code{matrix} of such
@@ -33,13 +33,16 @@
 #'
 #' @examples
 #' n <- 10
-#' x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
-#' delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
+#' x <- MASS::mvrnorm(2 * n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(4 * n, min = -3, max = 3), ncol = 2)
 #' epsilon <- stats::rbinom(n, 1, 1/2)
-#' delta <- delta * cbind(epsilon, 1 - epsilon)
+#' delta <- delta * cbind(c(epsilon, rep(1, n)),
+#'                        c(1 - epsilon, rep(1, n)))
 #' x <- x + delta
-#' (mt <- mediation_test_Bayes(x, map = map_01_0.05))
-#' plot(mt)
+#' (mt_01_0.05 <- mediation_test_Bayes(x, map = map_01_0.05))
+#' plot(mt_01_0.05)
+#' (mt_quad_0.05_0.1 <- mediation_test_Bayes(x, map = map_quad_0.05_0.1))
+#' plot(mt_quad_0.05_0.1)
 #'
 #' @export
 mediation_test_Bayes <- function(t, map, truncation = 0) {

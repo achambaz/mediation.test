@@ -20,9 +20,12 @@
 #'     hypothesis, the test statistic is drawn from the product of two Student
 #'     laws with 'sample_size-1' degrees of freedom.
 #'
+#' @param compute_pvals A   \code{logical}  indicating   whether  or   not
+#'     (conservative) p-values should be computed. 
+#' 
 #' @details For details, we refer  to the technical report  "Optimal Tests of
 #'     the Composite Null Hypothesis Arising in Mediation Analysis", by
-#'     Miles & Chambaz (2021), https://arxiv.org/abs/2107.07575 
+#'     Miles & Chambaz (2024), https://arxiv.org/abs/2107.07575 
 #' 
 #' @return A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
 #'     \code{numeric}s, the test statistic, or a 'n x 2' \code{matrix} of such
@@ -33,22 +36,23 @@
 #'     derive   the  test   statistic}  \item{decision:}{a   \code{vector}  of
 #'     \code{logical}s, \code{FALSE}  if the  null hypothesis can  be rejected
 #'     for  the  alternative  at  level 'alpha'  and  \code{TRUE}  otherwise;}
-#'     \item{pval:}{a \code{vector}  of \code{numeric}s,  the p-values  of the
-#'     tests;} \item{method:}{the \code{character} "minimax".} }
+#'     \item{pval:}{a \code{vector}  of \code{numeric}s,  the (conservative)
+#'    p-values  of the tests;} \item{method:}{the \code{character} "minimax".}}
 #'
-#' @seealso [BH_mediation_test_minimax()], which builds upon the present function to implement a Benjamini-Hochberg procedure to control false discovery rate.
+#' @seealso [mediation_test_minimax_BH()], which builds upon the present function to implement a Benjamini-Hochberg procedure to control false discovery rate.
 #' @examples
 #' n <- 10
-#' x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
-#' delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
-#' epsilon <- stats::rbinom(n, 1, 1/2)
-#' delta <- delta * cbind(epsilon, 1 - epsilon)
+#' x <- MASS::mvrnorm(2 * n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(4 * n, min = -3, max = 3), ncol = 2)
+#' epsilon <- stats::rbinom(n, size = 1, prob = 1/2)
+#' delta <- delta * cbind(c(epsilon, rep(1, n)),
+#'                        c(1 - epsilon, rep(1, n)))
 #' x <- x + delta
 #' (mt <- mediation_test_minimax(x, alpha = 1/20))
 #' plot(mt)
 #'
 #' @export
-mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size = Inf) {
+mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size = Inf, compute_pvals = TRUE) {
     t <- R.utils::Arguments$getNumerics(t)
     if (is.vector(t)) {
         t <- matrix(t, ncol = 2)
@@ -59,6 +63,7 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
     alpha <- R.utils::Arguments$getNumeric(alpha, c(0, 1/2))
     truncation <- R.utils::Arguments$getNumeric(truncation, c(0, Inf))
     sample_size <- R.utils::Arguments$getNumeric(sample_size, c(2, Inf))
+    compute_pvals <- R.utils::Arguments$getLogical(compute_pvals)
     if (!is.infinite(sample_size)) {
         if (!is.integer(sample_size)) {
             sample_size <- as.integer(sample_size)
@@ -92,7 +97,11 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
     if (truncation > 0) {
         decision <- decision & (apply(abs(t), 1, min) >= truncation)
     }
-    pvals <- compute_pval(t)
+    if (compute_pvals) {
+        pvals <- compute_pval(t)
+    } else {
+        pvals <- NA
+    }
     
     out <- list(t = t,
                 alpha = alpha,
@@ -120,17 +129,32 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
 #' @param truncation A nonnegative  \code{numeric} used to bound the rejection
 #'     region away  from the null  hypothesis space.  Defaults to 0,  in which
 #'     case the  rejection region is minimax optimal.
+#'
+#' @param BH A \code{character},  either "statistics" or  "pval", determining
+#'     whether the Benjamini-Hochberg  testing procedure is based  on the test
+#'     statistics or on the (conservative) p-values.
 #' 
-#' @param sample_size An \code{integer}  (larger than  one), the size  of the
+#' @param sample_size A \code{integer}  (larger than  one), the size  of the
 #'     sample used  to derive the  test statistic. Defaults to  'Inf', meaning
 #'     that, under the  null hypothesis, the test statistic is  drawn from the
 #'     \eqn{N_2(0,I_2)} law.  If  the integer is finite, then,  under the null
 #'     hypothesis, the test statistic is drawn from the product of two Student
 #'     laws with 'sample_size-1' degrees of freedom.
 #'
-#' @details For details, we refer  to the technical report  "Optimal Tests of
-#'     the Composite Null Hypothesis Arising in Mediation Analysis", by
-#'     Miles & Chambaz (2021), https://arxiv.org/abs/2107.07575 
+#' @param K An \code{integer} (10 by  default) used internally to speed up the
+#'     Benjamini-Hochberg  testing procedure  when  it is  based  on the  test
+#'     statistics (more details in the  Details section). Must be smaller than
+#'     'nrow(t)'.
+#' 
+#'  @details  Suppose  we  are  carrying out  \eqn{J}  tests.   Starting  from
+#'     \eqn{j=1},  we   increment  \eqn{j}  until  fewer   than  \eqn{j}  null
+#'     hypotheses  are   rejected  at  level  \eqn{\alpha\times   j/J}  for  K
+#'     consecutive iterations.   Eventually, we reject all  null hypotheses at
+#'     level \eqn{\alpha \times  jj/J}, where \eqn{jj} is  the largest integer
+#'     so far for which at least \eqn{jj} null hypotheses are rejected at this
+#'     level.  For  further   details,  we  refer  to   the  technical  report
+#'     "Optimal Tests of the Composite Null Hypothesis Arising in Mediation Analysis",
+#'     by Miles & Chambaz (2024), https://arxiv.org/abs/2107.07575
 #' 
 #' @return A list, consisting  of: \describe{ \item{t:}{a \code{vector} of two
 #'     \code{numeric}s, the test statistic, or a 'n x 2' \code{matrix} of such
@@ -142,26 +166,97 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
 #'     \code{logical}s, \code{FALSE}  if the  null hypothesis can  be rejected
 #'     for the  alternative at  false discovery  rate 'alpha'  and \code{TRUE}
 #'     otherwise;}  \item{pval:}{a   \code{vector}  of   \code{numeric}s,  the
-#'     p-values   of    the   tests;}    \item{method:}{the   \code{character}
-#'     "minimax+BH".}}
+#'     original  (conservative)  p-values  of the  tests;}  \item{method:}{the
+#'     \code{character}  "minimax_BH",} \item{BH:}{a  \code{character}, either
+#'     'statistics'  or  'pval',  determining whether  the  Benjamini-Hochberg
+#'     testing  procedure  is   based  on  the  test  statistics   or  on  the
+#'     (conservative) p-values;}\item{K:}{the \code{integer} K used internally
+#'     to speed up the Benjamini-Hochberg procedure based on the test statistics.}}
 #' 
 #' @seealso [mediation_test_minimax()], upon which this function builds.
 #' @examples
-#' n <- 10
-#' x <- MASS::mvrnorm(n, mu = c(0, 0), Sigma = diag(c(1, 1)))
-#' delta <- matrix(stats::runif(2 * n, min = -3, max = 3), ncol = 2)
-#' epsilon <- stats::rbinom(n, 1, 1/2)
-#' delta <- delta * cbind(epsilon, 1 - epsilon)
+#' n <- 100
+#' x <- MASS::mvrnorm(2 * n, mu = c(0, 0), Sigma = diag(c(1, 1)))
+#' delta <- matrix(stats::runif(4 * n, min = -5, max = 5), ncol = 2)
+#' epsilon <- stats::rbinom(n, size = 1, prob = 1/2)
+#' delta <- delta * cbind(c(epsilon, rep(1, n)),
+#'                        c(1 - epsilon, rep(1, n)))
 #' x <- x + delta
-#' (mt <- BH_mediation_test_minimax(x, alpha = 0.05))
-#' plot(mt)
+#' mt_BH_stats <- mediation_test_minimax_BH(x, alpha = 1/20, BH = "statistics")
+#' (sum(mt_BH_stats$decision))
+#' mt_BH_pval <- mediation_test_minimax_BH(x, alpha = 1/20, BH = "pval")
+#' (sum(mt_BH_pval$decision))
 #'
 #' @export
-BH_mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size = Inf) {
-    mt <- mediation_test_minimax(t = t, alpha = alpha, truncation = truncation, sample_size = sample_size)
-    pval <- stats::p.adjust(mt$pval)
-    mt$pval <- pval
-    mt$decision <- (pval <= alpha) & (apply(abs(t), 1, min) >= truncation)
-    mt$method <- "minimax+BH"
+mediation_test_minimax_BH <- function(t, alpha = 0.05, truncation = 0, BH = c("statistics", "pval"),
+                                      sample_size = Inf, K = 10L) {
+    t <- R.utils::Arguments$getNumerics(t)
+    alpha <- R.utils::Arguments$getNumeric(alpha, c(0, 1/2))
+    K <- R.utils::Arguments$getInteger(K, c(1, Inf))
+    if (is.vector(t)) {
+        t <- matrix(t, ncol = 2)
+    }
+    nn <- nrow(t)
+    if (nn == 1) {
+        warning("One single test statistic. Switching to 'mediation_test_minimax'.")
+        mt <- mediation_test_minimax(t, alpha, truncation, sample_size)
+    } else {
+        if (K >= nn) {
+            K <- nn - 1
+            warning("Replacing the user-supplied 'K' with 'nrow(tt)-1'.")
+        }
+        BH <- match.arg(BH)
+        if (BH == "pval") {## regular BH testing procedure based on the (conservative) p-values
+            mt <- mediation_test_minimax(t, alpha, truncation, sample_size)
+            pval <- stats::p.adjust(mt$pval)
+            decision <- (pval <= alpha) & (apply(abs(t), 1, min) >= truncation)
+            names(decision) <- rep("rejection", length(decision))
+            mt$decision <- decision
+        } else {## BH testing procedure based on the test statistics
+            fun <- function(aalpha) {
+                decision <- mediation_test_minimax(t, aalpha, truncation, sample_size, FALSE)$decision
+                sum(decision)
+            }
+            carry_on <- TRUE
+            from <- -K + 1
+            to <- 0
+            adjusted_alpha <- NA
+            nb_rejections <- c()
+            valid_levels <- c()
+            while (carry_on & to < nn) {
+                from <- from + K
+                to <- min(c(to + K, nn))
+                alphas <- alpha * seq(from = from/nn, to = to/nn, by = 1/nn)
+                nb_rejec <- vapply(alphas, fun, integer(1))
+                nb_rejections <- c(nb_rejections, nb_rejec)
+                valid_lev <- (nb_rejec >= seq.int(from = from, to = to, by = 1))
+                valid_levels <- c(valid_levels, valid_lev)
+                cum_valid_levels <- cumsum(valid_levels)
+                test <- any(cum_valid_levels -
+                            dplyr::lag(cum_valid_levels, K) <= 0, na.rm = TRUE)
+                if (test) {## otherwise, we carry on
+                    carry_on <- FALSE
+                    if (max(cum_valid_levels, na.rm = TRUE) == 0) {
+                        adjusted_alpha <- alpha
+                        mt <- mediation_test_minimax(t, adjusted_alpha, truncation, sample_size)
+                        decision <- rep(FALSE, nn)
+                        names(decision) <- rep("rejection", length(decision))
+                        mt$decision <- decision
+                    } else {
+                        idx <- min(which.max(cum_valid_levels))
+                        adjusted_alpha <- alpha *  idx / nn
+                        mt <- mediation_test_minimax(t, adjusted_alpha, truncation, sample_size)
+                        mt$alpha <- alpha
+                    }
+                }
+            }
+            if (is.na(adjusted_alpha)) {
+                mt <- mediation_test_minimax(t, alpha, truncation, sample_size)
+            }
+        }
+        mt$method <- "minimax_BH"
+        mt$BH <- BH
+        mt$K <- K
+    }
     return(mt)
 }

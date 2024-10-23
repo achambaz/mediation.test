@@ -4,10 +4,12 @@
 \alias{print.mediation.test}
 \title{Prints the output of \code{function}s \code{mediation_test_minimax} and \code{mediation_test_Bayes}.}
 \usage{
-\method{print}{mediation.test}(x, ...)
+\method{print}{mediation.test}(x, n = 6L, ...)
 }
 \arguments{
 \item{x}{An output of \code{function} \code{mediation_test_minimax} or \code{mediation_test_Bayes}.}
+
+\item{n}{An \code{integer} indicating how many individual tests should be printed.}
 
 \item{...}{Not used.}
 }
