@@ -164,7 +164,7 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
             msg <- sprintf("type-I error: %.3f; truncation: %.3f", alpha, x$truncation)
         } else if (length(method) == 2) {
             if (x$BH == "statistics") {
-                msg <- sprintf("FDR: %.3f (BH procedure based on test statistics); truncation: %.3f", alpha, x$truncation)
+                msg <- sprintf("FDR: %.3f (BH procedure based on test statistics and K=%i); truncation: %.3f", alpha, x$K, x$truncation)
             } else if (x$BH == "pval") {
                 msg <- sprintf("FDR: %.3f (BH procedure based on conservative p-values); truncation: %.3f", alpha, x$truncation)
             } else {
