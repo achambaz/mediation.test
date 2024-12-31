@@ -1,0 +1,41 @@
+url: https://achambaz.github.io/mediation.test/
+
+template:
+  bootstrap: 5
+
+reference:
+- title: Carrying out tests
+
+- subtitle: Minimax optimal test
+    desc: > Carrying out the minimax optimal test of the composite null "\eqn{\delta_x \times \delta_y=0}" against its alternative "\eqn{\delta_x \times \delta_y\neq 0}" based on the test statistic in the real plane.
+    contents:
+    - mediation_test_minimax
+    - mediation_test_minimax_BH
+
+- subtitle: Bayes risk optimal test
+    desc: > Carrying out the Bayes risk optimal test of the composite null "\eqn{\delta_x \times \delta_y=0}" against its alternative "\eqn{\delta_x \times \delta_y\neq 0}" based on the test statistic in the real plane.
+    contents:
+    - mediation_test_Bayes
+    
+- title: Utility functions
+
+- subtitle: Maps
+    desc: > Computing "maps" of rejection probabilities for the Bayes risk optimal test.
+    contents:
+    - compute_map_rejection_probs
+
+- subtitle: Printing and plotting
+    contents:
+    - print.mediation.test
+    - plot.mediation.test
+    - plot.map.rejection.probabilities
+
+- title: Built in datasets
+    desc: > Various useful "maps". 
+    contents:
+    - map_01_0.05
+    - map_quad_0.05
+    - map_quad_0.05_0.1
+    - map_01_0.01
+    - map_quad_0.01
+    - map_quad_0.01_0.1
