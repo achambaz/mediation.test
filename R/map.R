@@ -1,8 +1,11 @@
+#' Computing 'map's of rejection probabilities for the Bayes risk optimal test
+#' 
 #' Computes the  "map" of rejection  probabilities for the Bayes  risk optimal
 #' test of the  composite null "\eqn{\delta_x \times  \delta_y=0}" against its
 #' alternative  "\eqn{\delta_x  \times  \delta_y\neq  0}" based  on  the  test
 #' statistic in the real  plane.  The Bayes risk is induced  by either the 0-1
-#' or the bounded quadratic loss function.
+#' or  the  bounded  quadratic  loss  function, a  wished  type-I  error  and,
+#' possibly, a truncation parameter.
 #'
 #' @param alpha A positive  \code{numeric}, the wished type-I  error (default
 #'     value 0.05).

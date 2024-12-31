@@ -1,3 +1,5 @@
+#' Bayes  risk optimal  testing
+#' 
 #' Carries  out   the  Bayes   risk  optimal  test   of  the   composite  null
 #' "\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
 #' "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the

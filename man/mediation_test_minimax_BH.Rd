@@ -2,11 +2,8 @@
 % Please edit documentation in R/mediation.test.minimax.R
 \name{mediation_test_minimax_BH}
 \alias{mediation_test_minimax_BH}
-\title{Carries   out   the   minimax   optimal  test   of   the   composite   null
-"\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
-"\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
-real  plane,   aiming  for  a  control   of  false  discovery  rate   à  la
-Benjamini-Hochberg.}
+\title{Minimax optimal testing, aiming for a  control of false discovery rate à la
+Benjamini-Hochberg}
 \usage{
 mediation_test_minimax_BH(
   t,

@@ -2,11 +2,7 @@
 % Please edit documentation in R/map.R
 \name{compute_map_rejection_probs}
 \alias{compute_map_rejection_probs}
-\title{Computes the  "map" of rejection  probabilities for the Bayes  risk optimal
-test of the  composite null "\eqn{\delta_x \times  \delta_y=0}" against its
-alternative  "\eqn{\delta_x  \times  \delta_y\neq  0}" based  on  the  test
-statistic in the real  plane.  The Bayes risk is induced  by either the 0-1
-or the bounded quadratic loss function.}
+\title{Computing 'map's of rejection probabilities for the Bayes risk optimal test}
 \usage{
 compute_map_rejection_probs(
   alpha = 0.05,
@@ -50,7 +46,8 @@ Computes the  "map" of rejection  probabilities for the Bayes  risk optimal
 test of the  composite null "\eqn{\delta_x \times  \delta_y=0}" against its
 alternative  "\eqn{\delta_x  \times  \delta_y\neq  0}" based  on  the  test
 statistic in the real  plane.  The Bayes risk is induced  by either the 0-1
-or the bounded quadratic loss function.
+or  the  bounded  quadratic  loss  function, a  wished  type-I  error  and,
+possibly, a truncation parameter.
 }
 \examples{
 ## one of the four outputs of 'compute_map_rejection_probs' stored in the package

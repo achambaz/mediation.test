@@ -233,7 +233,9 @@ plot.mediation.test <- function(x, filename = NULL, return_fig = FALSE, xlim = c
     }
 }
 
-#' Plots the "map" of rejection probabilities  for the Bayes risk optimal test
+#' Plots the 'map' of rejection probabilities for the Bayes risk optimal test
+#' 
+#' Plots the 'map' of rejection probabilities  for the Bayes risk optimal test
 #' of  the  composite  null  "\eqn{\delta_x \times  \delta_y=0}"  against  its
 #' alternative  "\eqn{\delta_x  \times  \delta_y\neq  0}" based  on  the  test
 #' statistic in the real  plane.  

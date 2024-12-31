@@ -1,3 +1,5 @@
+#' Minimax  optimal  testing
+#' 
 #' Carries   out   the   minimax   optimal  test   of   the   composite   null
 #' "\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
 #' "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
@@ -114,6 +116,9 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
     return(out)
 }
 
+#' Minimax optimal testing, aiming for a  control of false discovery rate à la
+#' Benjamini-Hochberg
+#'
 #' Carries   out   the   minimax   optimal  test   of   the   composite   null
 #' "\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
 #' "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the

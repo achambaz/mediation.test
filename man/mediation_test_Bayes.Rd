@@ -2,10 +2,7 @@
 % Please edit documentation in R/mediation.test.Bayes.R
 \name{mediation_test_Bayes}
 \alias{mediation_test_Bayes}
-\title{Carries  out   the  Bayes   risk  optimal  test   of  the   composite  null
-"\eqn{\delta_x    \times     \delta_y=0}"    against     its    alternative
-"\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
-real plane.}
+\title{Bayes  risk optimal  testing}
 \usage{
 mediation_test_Bayes(t, map, truncation = 0)
 }

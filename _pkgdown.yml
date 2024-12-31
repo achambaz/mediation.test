@@ -4,41 +4,33 @@ template:
   bootstrap: 5
 
 reference:
-- title: Carrying out tests
+- title:  Carrying  out  tests of  the  composite null  hypothesis arising in mediation analysis
 
 - subtitle: Minimax optimal test
-    desc: >
-      Carrying out the minimax optimal test
-    contents:
-    - mediation_test_minimax
-    - mediation_test_minimax_BH
+  contents:
+  - mediation_test_minimax
+  - mediation_test_minimax_BH
 
 - subtitle: Bayes risk optimal test
-    desc: >
-      Carrying out the Bayes risk optimal test
-    contents:
-    - mediation_test_Bayes
-    
+  contents:
+  - mediation_test_Bayes
+
 - title: Utility functions
 
 - subtitle: Maps
-    desc: >
-      Computing 'maps' of rejection probabilities for the Bayes risk optimal test.
-    contents:
-    - compute_map_rejection_probs
+  desc: >
+    'Map's of rejection probabilities for the Bayes risk optimal test and a function to compute them.
+  contents:
+  - compute_map_rejection_probs
+  - map_01_0.05
+  - map_quad_0.05
+  - map_quad_0.05_0.1
+  - map_01_0.01
+  - map_quad_0.01
+  - map_quad_0.01_0.1
 
 - subtitle: Printing and plotting
-    contents:
-    - print.mediation.test
-    - plot.mediation.test
-    - plot.map.rejection.probabilities
-
-- title: Built in datasets
-    desc: > Various useful "maps". 
-    contents:
-    - map_01_0.05
-    - map_quad_0.05
-    - map_quad_0.05_0.1
-    - map_01_0.01
-    - map_quad_0.01
-    - map_quad_0.01_0.1
+  contents:
+  - print.mediation.test
+  - plot.mediation.test
+  - plot.map.rejection.probabilities
