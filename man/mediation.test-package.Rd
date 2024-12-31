@@ -8,6 +8,13 @@
 \description{
 This packages proposes more powerful tests of the composite null hypothesis arising in mediation analysis.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://achambaz.github.io/mediation.test/}
+}
+
+}
 \author{
 \strong{Maintainer}: Antoine Chambaz \email{antoine.chambaz@u-paris.fr}
 
