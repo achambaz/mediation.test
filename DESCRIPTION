@@ -27,9 +27,13 @@ Imports:
     tibble,
     tidyr,
     utils
-Suggests: MASS
+Suggests: 
+    knitr,
+    MASS,
+    rmarkdown
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Depends: 
     R (>= 2.10)
 URL: https://achambaz.github.io/mediation.test/
+VignetteBuilder: knitr

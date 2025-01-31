@@ -1,0 +1,132 @@
+---
+title: "mediation-test"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mediation-test}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "bibliography.bib"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this  vignette, we illustrate  the use  of the package  `mediation.test` by
+reproducing the simulation  study reported in @Miles2024. Our  objective is to
+compare the finite sample performances of our proposed tests with those of the
+delta  method,  joint  significance,  and van  Garderen  and  van  Giersbergen
+(henceforth vGvG, @vangarderen2022) tests. 
+
+```{r setup}
+library(tidyverse)
+library(mediation.test)
+theme_set(theme_gray(base_size = 30))
+```
+
+# 1 Simulation settings
+
+We will sample independently $k=1e5$ data points from $t$-distributions with
+$(n-1)$ degrees  of freedom and noncentrality  parameters $\sqrt{n}(\delta_x ,
+\delta_y)$, where $n=50$. Three simulation scenarios are considered:
+
+(a) $\delta_x$ and $\delta_y$ vary jointly from 0 to 0.4;
+
+(b) $\delta_y=0.2$ is fixed while $\delta_x$ varies from 0 to 0.4;
+
+(c) $\delta_y=0$ is fixed while $\delta_x$ varies from 0 to 0.6, thereby
+  exploring empirical type  I error across a range of  parameter values within
+  the composite null hypothesis space.
+
+To do so, we will repeatedly use the function defined below.
+
+```{r simulation-function}
+simulate <- function(delta_x, delta_y, k = 1e5, n = 50) {
+    Xn <- rt(k, n - 1, sqrt(n) * delta_x)
+    Yn <- rt(k, n - 1, sqrt(n) * delta_y)
+    Zn <- cbind(Xn, Yn)
+    return(Zn)
+}
+```
+
+All the testing procedures will aim for a type I error $\alpha = 0.05$. 
+
+```{r set-alpha}
+alpha <- 0.05
+```
+
+Three version of the minimax optimal test will be evaluated using the
+function `mediation_test_minimax`: 
+
+- the standard version, using the normal approximation of the test statistic; 
+
+- the test based on the  corresponding (conservative) $p$-value defined in the
+Supplementary Materials of @Miles2024, 
+
+- and a truncated minimax optimal test at  level $d = 0.1$, in order to make a
+  fair comparison with the vGvG test,  whose rejection region is 0.1 away from
+  the null hypothesis space.
+
+```{r set-param-1}
+sample_size <- Inf
+quantile_function <- qnorm
+truncation <- 0.1
+```
+
+Three versions  of the  Bayes risk  optimal test will  be evaluated  using the
+function `mediation_test_Bayes`: 
+
+- the standard version with 0-1 loss function, 
+
+- the standard version with quadratic loss function, 
+
+- and the constrained test with quadratic loss function. 
+
+We rely on  the "maps" of rejection probabilities embarked  in the package. In
+both the constrained and truncated tests, we also use a truncation at level $d
+= 0.1$.
+
+```{r set-param-2}
+m <- 64
+if (alpha == 0.05 & m == 64 & truncation == 0.1) {
+    map_01 <- map_01_0.05
+    map_quad <- map_quad_0.05
+    map_quad_trunc <- map_quad_0.05_0.1
+} else {
+    map_01 <- compute_map_rejection_probs(
+        alpha = alpha,
+        K = m,
+        loss = "0-1",
+        truncation = 0,
+        return_solver = FALSE)
+    map_quad <- compute_map_rejection_probs(
+        alpha = alpha,
+        K = m,
+        loss = "quad",
+        truncation = 0,
+        return_solver = FALSE)
+    map_quad_trunc <- compute_map_rejection_probs(
+        alpha = alpha,
+        K = m,
+        loss = "quad",
+        truncation = truncation,
+        return_solver = FALSE)
+}
+```
+
+In the next three sections, we will 
+
+# 2 Scenario (a) 
+
+
+
+# 3 Scenario (b)
+
+# 4 Scenario (c)
+
+# 5 Scenario (c) revisited
+
+## References
