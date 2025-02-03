@@ -14,7 +14,7 @@
 #'     hypothesis  test and  of the  plane.  The  complexity of  the resulting
 #'     optimization  problem is  \eqn{O(K^2)}, so  'K' should  neither be  too
 #'     small nor too large. The default  value is 'K=16'.  We recommend 'K=64'
-#'     as a sensible value and enforce \eqn{2 \leq K \leq 128}.
+#'     as a sensible value and enforce \eqn{2 \le K \le 128}.
 #'
 #' @param loss  A  \code{character},   either  "0-1"  (default   value)  or
 #'     "quadratic", to indicate which loss function to consider.
@@ -27,12 +27,13 @@
 #'     be returned  (if 'TRUE') or  not (if  'FALSE', default). Note  that the
 #'     'lpSolve' object can be quite big.
 #' 
-#' @return A  '2*K  x 2*K'  \code{matrix} whose  '(i,j)'  coefficient is  the
-#'     probability to  reject the null  when the  test statistic falls  in the
-#'     square \eqn{[b(i-1-K)/K,  b(i-K)/K] \times [b(j-1-K)/K,  b(j-K)/K]}. If
-#'     'return_solver'  is 'TRUE',  then the  matrix has  an attribute  called
-#'     'solver'  which is  the complete  output of  the optimization  function
-#'     'lpSolve::lp' used to determine the  probabilities.
+#'  @return A  '2*K  x 2*K'  \code{matrix} whose  '(i,j)'  coefficient is  the
+#'    probability to  reject the null  when the  test statistic falls  in the
+#'    square \eqn{[b(i-1-K)/K, b(i-K)/K] \times [b(j-1-K)/K, b(j-K)/K]}, with
+#'    'b' set  to '2 *  stats::qnorm(1 - alpha  / 2)'. If  'return_solver' is
+#'    'TRUE', then the  matrix has an attribute called 'solver'  which is the
+#'    complete  output of  the  optimization function  'lpSolve::lp' used  to
+#'    determine the probabilities.
 #'
 #' @examples
 #' ## one of the four outputs of 'compute_map_rejection_probs' stored in the package
