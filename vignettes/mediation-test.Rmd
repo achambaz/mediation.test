@@ -21,7 +21,7 @@ compare the finite sample performances of our proposed tests with those of the
 delta  method,  joint  significance,  and van  Garderen  and  van  Giersbergen
 (henceforth vGvG, @vangarderen2022) tests. 
 
-```{r setup, echo=FALSE}
+```{r setup, message=FALSE}
 library(mediation.test)
 library(tibble)
 library(ggplot2)
@@ -109,7 +109,13 @@ map_quad <- map_quad_0.05
 map_quad_trunc <- map_quad_0.05_0.1
 ```
 
-Had `m`  been different (and  `alpha`, `truncation`  for that matter  too), we
+For instance, this is what `map_quad` looks like:
+
+```{r show-map-quad}
+plot(map_quad)
+``` 
+
+Had `m` been different (and `alpha`, `truncation` for that matter too), we
 would have relied on the function `compute_map_rejection_probs` to compute the
 corresponding maps.
 
