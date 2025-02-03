@@ -21,9 +21,10 @@ compare the finite sample performances of our proposed tests with those of the
 delta  method,  joint  significance,  and van  Garderen  and  van  Giersbergen
 (henceforth vGvG, @vangarderen2022) tests. 
 
-```{r setup, include=FALSE}
-library(tidyverse)
+```{r setup, echo=FALSE}
 library(mediation.test)
+library(tibble)
+library(ggplot2)
 theme_set(theme_gray(base_size = 5))
 set.seed(1)
 ```
