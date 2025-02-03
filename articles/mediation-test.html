@@ -64,6 +64,12 @@ is to compare the finite sample performances of our proposed tests with
 those of the delta method, joint significance, and van Garderen and van
 Giersbergen (henceforth vGvG, <span class="citation">Garderen and
 Giersbergen (2022)</span>) tests.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://achambaz.github.io/mediation.test/">mediation.test</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="simulation-settings">1 Simulation settings<a class="anchor" aria-label="anchor" href="#simulation-settings"></a>
 </h2>
@@ -98,7 +104,7 @@ range of parameter values within the composite null hypothesis
 space.</p></li>
 </ol>
 <p>To do so, we will repeatedly use the function defined below.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_obs</span> <span class="op">&lt;-</span> <span class="fl">50</span></span>
 <span></span>
 <span><span class="va">simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">delta_x</span>, <span class="va">delta_y</span>, <span class="va">k</span> <span class="op">=</span> <span class="fl">1e5</span>, <span class="va">n</span> <span class="op">=</span> <span class="va">n_obs</span><span class="op">)</span> <span class="op">{</span></span>
@@ -109,7 +115,7 @@ space.</p></li>
 <span><span class="op">}</span></span></code></pre></div>
 <p>All the testing procedures will aim for a type I error
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0.05</mn></mrow><annotation encoding="application/x-tex">\alpha = 0.05</annotation></semantics></math>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">alpha</span> <span class="op">&lt;-</span> <span class="fl">0.05</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -129,7 +135,7 @@ and Chambaz (2024)</span>;</p></li>
 in order to make a fair comparison with the vGvG test, whose rejection
 region is 0.1 away from the null hypothesis space.</p></li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sample_size</span> <span class="op">&lt;-</span> <span class="cn">Inf</span></span>
 <span><span class="va">quantile_function</span> <span class="op">&lt;-</span> <span class="va">qnorm</span></span>
 <span><span class="va">truncation</span> <span class="op">&lt;-</span> <span class="fl">0.1</span></span></code></pre></div>
@@ -159,16 +165,20 @@ with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>=</mo><mn>64</mn></mrow><annotation encoding="application/x-tex">m=64</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>≤</mo><mi>i</mi><mo>,</mo><mi>j</mi><mo>≤</mo><mn>2</mn><mi>m</mi></mrow><annotation encoding="application/x-tex">1 \leq i,j \leq 2m</annotation></semantics></math>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">64</span></span>
 <span><span class="va">map_01</span> <span class="op">&lt;-</span> <span class="va">map_01_0.05</span></span>
 <span><span class="va">map_quad</span> <span class="op">&lt;-</span> <span class="va">map_quad_0.05</span></span>
 <span><span class="va">map_quad_trunc</span> <span class="op">&lt;-</span> <span class="va">map_quad_0.05_0.1</span></span></code></pre></div>
+<p>For instance, this is what <code>map_quad</code> looks like:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">map_quad</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mediation-test_files/figure-html/show-map-quad-1.png" width="700"></p>
 <p>Had <code>m</code> been different (and <code>alpha</code>,
 <code>truncation</code> for that matter too), we would have relied on
 the function <code>compute_map_rejection_probs</code> to compute the
 corresponding maps.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">alpha</span> <span class="op">==</span> <span class="fl">0.05</span> <span class="op">&amp;</span> <span class="va">m</span> <span class="op">==</span> <span class="fl">64</span> <span class="op">&amp;</span> <span class="va">truncation</span> <span class="op">==</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">map_01</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_map_rejection_probs.html">compute_map_rejection_probs</a></span><span class="op">(</span></span>
 <span>        alpha <span class="op">=</span> <span class="va">alpha</span>,</span>
@@ -195,7 +205,7 @@ corresponding maps.</p>
 </h3>
 <p>Our minimax optimal and Bayes risk optimal tests will be compared to
 the delta method, joint significance, and vGvG tests.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delta_method_test</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">Zn</span>, <span class="va">alpha</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">Zn</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">*</span> <span class="va">Zn</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">Zn</span><span class="op">^</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="va">sum</span><span class="op">)</span><span class="op">)</span> <span class="op">&gt;</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">qnorm</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">alpha</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
@@ -229,7 +239,7 @@ the delta method, joint significance, and vGvG tests.</p>
 </h2>
 <p>We first initialize the vectors that will receive the empirical
 powers.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
 <span><span class="va">pow_nms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pow_minimax"</span>,  <span class="st">"pow_minimax_trunc"</span>, <span class="st">"pow_minimax_pval"</span>,</span>
 <span>             <span class="st">"pow_Bayes_01"</span>,  <span class="st">"pow_Bayes_quad"</span>,  <span class="st">"pow_Bayes_quad_constr"</span>, </span>
@@ -240,7 +250,7 @@ powers.</p>
 <p>We are now in a position to conduct the Monte Carlo analysis. To
 avoid unnecessary repetitions, we define a function called
 <code>run_simulation</code> that we will call repeatedly.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delta_x</span> <span class="op">&lt;-</span> <span class="va">delta_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.4</span>, length.out <span class="op">=</span> <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">run_simulation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
@@ -300,7 +310,7 @@ avoid unnecessary repetitions, we define a function called
 <span><span class="co">## ####################### ##</span></span>
 <span><span class="co">## colllecting the results ##</span></span>
 <span><span class="co">## ####################### ##</span></span>
-<span><span class="va">pow_scenario_a</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span><span class="va">pow_scenario_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
 <span>                         power <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">pow_a</span><span class="op">)</span>,</span>
 <span>                         test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO trunc"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
@@ -312,16 +322,16 @@ avoid unnecessary repetitions, we define a function called
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO pval"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"vGvG"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fig_scenario_a</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_a</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span><span class="va">fig_scenario_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_a</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        x <span class="op">=</span> <span class="va">delta</span>, y <span class="op">=</span> <span class="va">power</span>, group <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        color <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        <span class="op">)</span>,</span>
 <span>        linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">fig_scenario_a</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mediation-test_files/figure-html/scecnario-a-2-1.png" width="80%" style="display: block; margin: auto;"></p>
 <p>Apart from the minimax optimal
@@ -358,7 +368,7 @@ distribution at
 <h2 id="scenario-b">3 Scenario (b)<a class="anchor" aria-label="anchor" href="#scenario-b"></a>
 </h2>
 <p>We now turn to scenario (b).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delta_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.6</span>, length.out <span class="op">=</span> <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">delta_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.2</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">delta_x</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -370,7 +380,7 @@ distribution at
 <span><span class="co">## ####################### ##</span></span>
 <span><span class="co">## colllecting the results ##</span></span>
 <span><span class="co">## ####################### ##</span></span>
-<span><span class="va">pow_scenario_b</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span><span class="va">pow_scenario_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
 <span>                         power <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">pow_b</span><span class="op">)</span>,</span>
 <span>                         test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO trunc"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
@@ -382,16 +392,16 @@ distribution at
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO pval"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"vGvG"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fig_scenario_b</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_b</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span><span class="va">fig_scenario_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_b</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        x <span class="op">=</span> <span class="va">delta</span>, y <span class="op">=</span> <span class="va">power</span>, group <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        color <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        <span class="op">)</span>,</span>
 <span>        linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">fig_scenario_b</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mediation-test_files/figure-html/scenario-b-1.png" width="80%" style="display: block; margin: auto;"></p>
 <p>The trends are largely the same as in scenario (a). The main
@@ -415,7 +425,7 @@ is fixed at 0.2, power for all tests appears to plateau a little under
 <h2 id="scenario-c">4 Scenario (c)<a class="anchor" aria-label="anchor" href="#scenario-c"></a>
 </h2>
 <p>We now turn to scenario (c).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delta_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.8</span>, length.out <span class="op">=</span> <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">delta_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">delta_x</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -427,7 +437,7 @@ is fixed at 0.2, power for all tests appears to plateau a little under
 <span><span class="co">## ####################### ##</span></span>
 <span><span class="co">## colllecting the results ##</span></span>
 <span><span class="co">## ####################### ##</span></span>
-<span><span class="va">pow_scenario_c</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span><span class="va">pow_scenario_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
 <span>                         power <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">pow_c</span><span class="op">)</span>,</span>
 <span>                         test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO trunc"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
@@ -439,16 +449,16 @@ is fixed at 0.2, power for all tests appears to plateau a little under
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO pval"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"vGvG"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fig_scenario_c</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_c</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span><span class="va">fig_scenario_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_c</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        x <span class="op">=</span> <span class="va">delta</span>, y <span class="op">=</span> <span class="va">power</span>, group <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        color <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        <span class="op">)</span>,</span>
 <span>        linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">fig_scenario_c</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mediation-test_files/figure-html/scenario-c-1.png" width="80%" style="display: block; margin: auto;"></p>
 <p>All tests approximately preserve type 1 error. Moreover, the
@@ -472,7 +482,7 @@ with
 degrees of freedom instead of the standard normal approximation in the
 minimax optimal tests. For this purpose, we simply redefine the object
 <code>quantile_function</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">delta_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.8</span>, length.out <span class="op">=</span> <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">delta_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">delta_x</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -487,7 +497,7 @@ minimax optimal tests. For this purpose, we simply redefine the object
 <span><span class="co">## ####################### ##</span></span>
 <span><span class="co">## colllecting the results ##</span></span>
 <span><span class="co">## ####################### ##</span></span>
-<span><span class="va">pow_scenario_d</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span><span class="va">pow_scenario_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>delta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">delta_x</span>, <span class="fl">9</span><span class="op">)</span>,</span>
 <span>                         power <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">pow_d</span><span class="op">)</span>,</span>
 <span>                         test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO trunc"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
@@ -499,16 +509,16 @@ minimax optimal tests. For this purpose, we simply redefine the object
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"MMO pval"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"vGvG"</span>, <span class="va">P</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fig_scenario_d</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_d</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
+<span><span class="va">fig_scenario_d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pow_scenario_d</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
 <span>        x <span class="op">=</span> <span class="va">delta</span>, y <span class="op">=</span> <span class="va">power</span>, group <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        color <span class="op">=</span> <span class="va">test</span>,</span>
 <span>        <span class="op">)</span>,</span>
 <span>        linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">alpha</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">delta</span><span class="op">[</span><span class="va">x</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">fig_scenario_d</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mediation-test_files/figure-html/scenario-d-1.png" width="80%" style="display: block; margin: auto;"></p>
 <p>The use of the
