@@ -4,7 +4,8 @@
 \name{map_01_0.05}
 \alias{map_01_0.05}
 \title{'Map'  of  rejection  probabilities  for the  Bayes  risk  optimal  testing
-procedure, 0-1 loss function and 0.05 type-I error}
+procedure, 0-1 loss  function and 0.05 type-I error,  using standard normal
+approximations for the involved t-distributions}
 \format{
 \subsection{\code{map_01_0.05}}{
 
@@ -19,6 +20,7 @@ The 'map' of rejection probabilities for the Bayes risk optimal test of the
 composite null  "\eqn{\delta_x \times \delta_y=0}" against  its alternative
 "\eqn{\delta_x \times \delta_y\neq  0}" based on the test  statistic in the
 real plane  that is  induced by  the 0-1  loss function  for a  0.05 type-I
-error. No truncation required.
+error. No truncation required. Uses  standard normal approximations for the
+involved t-distributions.
 }
 \keyword{datasets}

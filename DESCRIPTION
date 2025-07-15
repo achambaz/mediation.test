@@ -1,7 +1,7 @@
 Package: mediation.test
 Title: More Powerful Tests of the Composite Null Hypothesis Arising in Mediation Analysis
-Version: 1.2.0
-Published: 21/10/2024
+Version: 1.2.5
+Published: 14/07/2025
 Authors@R: c(
     person(given = "Antoine",
            family = "Chambaz",

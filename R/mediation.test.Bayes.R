@@ -12,6 +12,13 @@
 #' @param map  The "map" of rejection  probabilities -- the 'map'  item of the
 #'     output of function \code{compute_map_rejection_probs}.
 #'
+#' @param sample_size An \code{integer}  (larger than  one), the size  of the
+#'     sample used  to derive the  test statistic. Defaults to  'Inf', meaning
+#'     that, under the  null hypothesis, the test statistic is  drawn from the
+#'     \eqn{N_2(0,I_2)} law.  If  the integer is finite, then,  under the null
+#'     hypothesis, the test statistic is drawn from the product of two Student
+#'     laws with 'sample_size-1' degrees of freedom.
+#' 
 #' @param truncation A nonnegative  \code{numeric} used to bound the rejection
 #'     region away  from the null  hypothesis space.  Defaults to 0,  in which
 #'     case the  rejection region is minimax optimal.
@@ -47,12 +54,29 @@
 #' plot(mt_quad_0.05_0.1)
 #'
 #' @export
-mediation_test_Bayes <- function(t, map, truncation = 0) {
+mediation_test_Bayes <- function(t, map, sample_size = Inf, truncation = 0) {
     t <- R.utils::Arguments$getNumerics(t)
     if (!inherits(map, "map.rejection.probabilities")) {
         R.oo::throw("Argument 'map' should be an output of function 'compute_map_rejection_probs', not ", map) 
     }
     truncation <- R.utils::Arguments$getNumeric(truncation, c(0, Inf))
+    if (truncation != attr(map, "truncation")) {
+        msg <- sprintf("Argument 'truncation' in call to 'mediation_test_Bayes' (%f) differs from the one attrached to the provided map (%f). Using the first one...",
+                       truncation, attr(map, "truncation"))
+        warning(msg)
+    }
+    sample_size <- R.utils::Arguments$getNumeric(sample_size, c(2, Inf))
+    if (!is.infinite(sample_size)) {
+        if (!is.integer(sample_size)) {
+            sample_size <- as.integer(sample_size)
+            warning("Coercing argument 'sample_size' to an integer.")
+        }
+    }
+    if (sample_size != attr(map, "sample_size")) {
+        msg <- sprintf("Argument 'sample_size' in call to 'mediation_test_Bayes' (%i) differs from the one attrached to the provided map (%i). Using the first one...",
+                       sample_size, attr(map, "sample_size"))
+        warning(msg)
+    }
     if (is.vector(t)) {
         t <- matrix(t, ncol = 2)
     }
@@ -63,7 +87,9 @@ mediation_test_Bayes <- function(t, map, truncation = 0) {
     ##
     make_decision <- function(tt, aalpha, mmap) {
         K <- ncol(mmap)/2
-        B <- 2 * stats::qnorm(1 - aalpha/2)
+        ## version 1.2.0
+        ## B <- 2 * stats::qnorm(1 - aalpha/2)
+        B <- 2 * stats::qt(1 - aalpha/2, df = sample_size-1)
         abstt <- abs(tt)
         max_abstt <- pmax(abstt[, 1], abstt[, 2])
         min_abstt <- pmin(abstt[, 1], abstt[, 2])

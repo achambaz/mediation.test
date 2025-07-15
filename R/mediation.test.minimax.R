@@ -77,7 +77,7 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
         qtls <- stats::qt(seq(from = 1 - aalpha_inverse * aalpha/2,
                               to = 1 - aalpha_inverse * alpha/2 + aalpha_inverse * aalpha/2,
                               by = aalpha/2),
-                          df = sample_size)
+                          df = sample_size - 1)
         tt <- abs(tt)
         int_x <- findInterval(tt[, 1], qtls)
         int_y <- findInterval(tt[, 2], qtls)
@@ -87,8 +87,8 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
     }
     compute_pval <- function(tt) {
         tt <- abs(tt)
-        phi_maxtt <- stats::pt(pmax(tt[, 1], tt[, 2]), df = sample_size)
-        phi_mintt <- stats::pt(pmin(tt[, 1], tt[, 2]), df = sample_size)
+        phi_maxtt <- stats::pt(pmax(tt[, 1], tt[, 2]), df = sample_size - 1)
+        phi_mintt <- stats::pt(pmin(tt[, 1], tt[, 2]), df = sample_size - 1)
         K <- floor((1 - phi_maxtt)/(phi_maxtt - phi_mintt))
         sums <- c(0, cumsum(1/(1:max(K))))
         ##

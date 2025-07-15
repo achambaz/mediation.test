@@ -4,7 +4,8 @@
 \name{map_01_0.01}
 \alias{map_01_0.01}
 \title{'Map'  of  rejection  probabilities  for the  Bayes  risk  optimal  testing
-procedure, 0-1 loss function and 0.01 type-I error}
+procedure, 0-1 loss  function and 0.01 type-I error,  using standard normal
+approximations for the involved t-distributions}
 \format{
 \subsection{\code{map_01_0.01}}{
 

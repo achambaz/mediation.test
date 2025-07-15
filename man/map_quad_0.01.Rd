@@ -4,7 +4,8 @@
 \name{map_quad_0.01}
 \alias{map_quad_0.01}
 \title{'Map'  of  rejection  probabilities  for the  Bayes  risk  optimal  testing
-procedure, quadratic loss function and 0.01 type-I error}
+procedure, quadratic  loss function and  0.01 type-I error,  using standard
+normal approximations for the involved t-distributions}
 \format{
 \subsection{\code{map_quad_0.01}}{
 

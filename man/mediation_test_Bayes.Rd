@@ -4,7 +4,7 @@
 \alias{mediation_test_Bayes}
 \title{Bayes  risk optimal  testing}
 \usage{
-mediation_test_Bayes(t, map, truncation = 0)
+mediation_test_Bayes(t, map, sample_size = Inf, truncation = 0)
 }
 \arguments{
 \item{t}{A  \code{vector}  consisting of  two  \code{numeric}s, the  test
@@ -13,6 +13,13 @@ statistics.}
 
 \item{map}{The "map" of rejection  probabilities -- the 'map'  item of the
 output of function \code{compute_map_rejection_probs}.}
+
+\item{sample_size}{An \code{integer}  (larger than  one), the size  of the
+sample used  to derive the  test statistic. Defaults to  'Inf', meaning
+that, under the  null hypothesis, the test statistic is  drawn from the
+\eqn{N_2(0,I_2)} law.  If  the integer is finite, then,  under the null
+hypothesis, the test statistic is drawn from the product of two Student
+laws with 'sample_size-1' degrees of freedom.}
 
 \item{truncation}{A nonnegative  \code{numeric} used to bound the rejection
 region away  from the null  hypothesis space.  Defaults to 0,  in which

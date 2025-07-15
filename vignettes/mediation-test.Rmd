@@ -1,5 +1,5 @@
 ---
-title: "mediation-test"
+title: "Introducing the `mediation.test` package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{mediation-test}
@@ -25,7 +25,7 @@ delta  method,  joint  significance,  and van  Garderen  and  van  Giersbergen
 library(mediation.test)
 library(tibble)
 library(ggplot2)
-theme_set(theme_gray(base_size = 5))
+theme_set(theme_gray(base_size = 10))
 set.seed(1)
 ```
 
@@ -50,7 +50,7 @@ To do so, we will repeatedly use the function defined below.
 ```{r simulation-function}
 n_obs <- 50
 
-simulate <- function(delta_x, delta_y, k = 1e5, n = n_obs) {
+simulate <- function(delta_x, delta_y, k = 1e4, n = n_obs) {
     Xn <- rt(k, n - 1, sqrt(n) * delta_x)
     Yn <- rt(k, n - 1, sqrt(n) * delta_y)
     Zn <- cbind(Xn, Yn)
@@ -107,20 +107,23 @@ m <- 64
 map_01 <- map_01_0.05
 map_quad <- map_quad_0.05
 map_quad_trunc <- map_quad_0.05_0.1
+map_01_t <- map_01_0.05_t50
+map_quad_t <- map_quad_0.05_t50
+map_quad_trunc_t <- map_quad_0.05_0.1_t50
 ```
 
 For instance, this is what `map_quad` looks like:
 
-```{r show-map-quad}
+```{r show-map-quad, out.width="80%", dpi=300, fig.align="center"}
 plot(map_quad)
 ``` 
 
-Had `m` been different (and `alpha`, `truncation` for that matter too), we
+Had `m` been different (and `alpha`, `truncation`, `n_obs` for that matter too), we
 would have relied on the function `compute_map_rejection_probs` to compute the
 corresponding maps.
 
 ```{r set-param-3}
-if (!(alpha == 0.05 & m == 64 & truncation == 0.1)) {
+if (!(alpha == 0.05 & m == 64 & truncation == 0.1 & n_obs == 50)) {
     map_01 <- compute_map_rejection_probs(
         alpha = alpha,
         K = m,
@@ -137,6 +140,27 @@ if (!(alpha == 0.05 & m == 64 & truncation == 0.1)) {
         alpha = alpha,
         K = m,
         loss = "quad",
+        truncation = truncation,
+        return_solver = FALSE)
+    map_01_t <- compute_map_rejection_probs(
+        alpha = alpha,
+        K = m,
+        loss = "0-1",
+        sample_size = n_obs,
+        truncation = 0,
+        return_solver = FALSE)
+    map_quad_t <- compute_map_rejection_probs(
+        alpha = alpha,
+        K = m,
+        loss = "quad",
+        sample_size = n_obs,
+        truncation = 0,
+        return_solver = FALSE)
+    map_quad_trunc_t <- compute_map_rejection_probs(
+        alpha = alpha,
+        K = m,
+        loss = "quad",
+        sample_size = n_obs,
         truncation = truncation,
         return_solver = FALSE)
 }
@@ -165,7 +189,7 @@ vGvG_test <- function(Zn, alpha = 0.05) {
             y <- c(0., 0.1, 0.106723, 0.106723, 0.106724, 0.106724,
                    1.30583, 1.31286, 1.3131, 1.3131, 1.3175, 1.9175,
                    1.9275, 1.9375, 1.9475, 1.9575, 1.95996)
-            ifelse(tabs >= 2.1, 1.95996, approx(x, y, xout = tabs)$y)
+            ifelse(tabs >= 2.1, qnorm(1 - alpha / 2), approx(x, y, xout = tabs)$y)
         }
         out <- pmin(abs(Zn[, 1]), abs(Zn[, 2])) >
             g(pmax(abs(Zn[, 1]), abs(Zn[, 2])))
@@ -194,7 +218,7 @@ We  are now  in a  position  to conduct  the  Monte Carlo  analysis. To  avoid
 unnecessary repetitions, we define a  function called `run_simulation` that we
 will call repeatedly.
 
-```{r scecnario-a-2, out.width="80%", dpi=300, fig.align="center"}
+```{r scenario-a-2, out.width="80%", dpi=300, fig.align="center"}
 delta_x <- delta_y <- seq(0, .4, length.out = P + 1)
 
 run_simulation <- function() {
@@ -217,15 +241,30 @@ run_simulation <- function() {
                                                   truncation = truncation,
                                                   sample_size = sample_size,
                                                   compute_pvals = FALSE)
-        R_Bayes_01 <- mediation_test_Bayes(Zn,
-                                           map_01,
-                                           truncation = 0)
-        R_Bayes_quad <- mediation_test_Bayes(Zn,
-                                             map_quad,
-                                             truncation = 0)
-        R_Bayes_quad_constr <- mediation_test_Bayes(Zn,
-                                                    map_quad_trunc,
-                                                    truncation = truncation)
+        if (is.infinite(sample_size)) {
+            R_Bayes_01 <- mediation_test_Bayes(Zn,
+                                               map_01,
+                                               truncation = 0)
+            R_Bayes_quad <- mediation_test_Bayes(Zn,
+                                                 map_quad,
+                                                 truncation = 0)
+            R_Bayes_quad_constr <- mediation_test_Bayes(Zn,
+                                                        map_quad_trunc,
+                                                        truncation = truncation)
+        } else {
+            R_Bayes_01 <- mediation_test_Bayes(Zn,
+                                               map_01_t,
+                                               truncation = 0,
+                                               sample_size = sample_size)
+            R_Bayes_quad <- mediation_test_Bayes(Zn,
+                                                 map_quad_t,
+                                                 truncation = 0,
+                                                 sample_size = sample_size)
+            R_Bayes_quad_constr <- mediation_test_Bayes(Zn,
+                                                        map_quad_trunc_t,
+                                                        truncation = truncation,
+                                                        sample_size = sample_size)            
+        } 
         R_delta <- delta_method_test(Zn, alpha)
         R_js <- joint_significance_test(Zn, alpha, quantile_function)
         R_vGvG <- vGvG_test(Zn, alpha)
@@ -410,12 +449,35 @@ We  revisit scenario  (c), using  a $t$-distribution  with $(n-1)$  degrees of
 freedom instead  of the standard  normal approximation in the  minimax optimal
 tests. For this purpose, we simply redefine the object `quantile_function`.
 
+
+
 ```{r scenario-d, out.width="80%", dpi=300, fig.align="center"}
 delta_x <- seq(0, .8, length.out = P + 1)
 delta_y <- rep(0, length(delta_x))
 
-sample_size <- as.integer(n_obs - 1)
-quantile_function <- \(t) qt(t, df = sample_size)
+vGvG_test <- function(Zn, alpha = 0.05) {
+    if (alpha == 0.05) {
+        g <- function(t) {
+            tabs <- abs(t)
+            x <- c(0., 0.1, 0.11, 0.13, 0.14, 0.15, 1.35, 1.36, 1.37,
+                   1.44, 1.45, 2.05, 2.06, 2.07, 2.08, 2.09, 2.1)
+            y <- c(0., 0.1, 0.106723, 0.106723, 0.106724, 0.106724,
+                   1.30583, 1.31286, 1.3131, 1.3131, 1.3175, 1.9175,
+                   1.9275, 1.9375, 1.9475, 1.9575, 1.95996)
+            x <- qt(pnorm(x), df = n_obs - 1)
+            y <- qt(pnorm(y), df = n_obs - 1)
+            ifelse(tabs >= 2.1, qt(1-alpha/2, df = n_obs - 1), approx(x, y, xout = tabs)$y)
+        }
+        out <- pmin(abs(Zn[, 1]), abs(Zn[, 2])) >
+            g(pmax(abs(Zn[, 1]), abs(Zn[, 2])))
+    } else {
+        out <- rep(NA, nrow(Zn))
+    }
+    return(out)
+}
+
+sample_size <- as.integer(n_obs)
+quantile_function <- \(t) qt(t, df = n_obs - 1)
 
 ## ###################### ##
 ## running the simulation ##
