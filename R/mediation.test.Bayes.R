@@ -69,7 +69,7 @@ mediation_test_Bayes <- function(t, map, sample_size = Inf, truncation = 0) {
     if (!is.infinite(sample_size)) {
         if (!is.integer(sample_size)) {
             sample_size <- as.integer(sample_size)
-            warning("Coercing argument 'sample_size' to an integer.")
+            message("Coercing argument 'sample_size' to an integer.")
         }
     }
     if (sample_size != attr(map, "sample_size")) {

@@ -69,7 +69,7 @@ mediation_test_minimax <- function(t, alpha = 0.05, truncation = 0, sample_size 
     if (!is.infinite(sample_size)) {
         if (!is.integer(sample_size)) {
             sample_size <- as.integer(sample_size)
-            warning("Coercing argument 'sample_size' to an integer.")
+            message("Coercing argument 'sample_size' to an integer.")
         }
     }
     make_decision <- function(tt, aalpha) {

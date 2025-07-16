@@ -62,7 +62,7 @@ compute_map_rejection_probs <- function(alpha = 0.05, K = 16, loss = c("0-1", "q
     if (!is.infinite(sample_size)) {
         if (!is.integer(sample_size)) {
             sample_size <- as.integer(sample_size)
-            warning("Coercing argument 'sample_size' to an integer.")
+            message("Coercing argument 'sample_size' to an integer.")
         }
     } 
     ## version 1.2.0

@@ -451,7 +451,7 @@ optimal, and  Bayes optimal tests.   For this  purpose, we adapt  the function
 `vGvG_test`    and     simply    redefine    the     objects    `sample_size`,
 `quantile_function`.
 
-```{r scenario-d, out.width="80%", dpi=300, fig.align="center"}
+```{r scenario-d, out.width="80%", dpi=300, fig.align="center", message=FALSE}
 delta_x <- seq(0, .8, length.out = P + 1)
 delta_y <- rep(0, length(delta_x))
 
