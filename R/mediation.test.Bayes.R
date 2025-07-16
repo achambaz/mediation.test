@@ -73,7 +73,7 @@ mediation_test_Bayes <- function(t, map, sample_size = Inf, truncation = 0) {
         }
     }
     if (sample_size != attr(map, "sample_size")) {
-        msg <- sprintf("Argument 'sample_size' in call to 'mediation_test_Bayes' (%i) differs from the one attrached to the provided map (%i). Using the first one...",
+        msg <- sprintf("Argument 'sample_size' in call to 'mediation_test_Bayes' (%i) differs from the one attrached to the provided map (%f). Using the first one...",
                        sample_size, attr(map, "sample_size"))
         warning(msg)
     }

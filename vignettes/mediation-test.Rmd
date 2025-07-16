@@ -50,7 +50,7 @@ To do so, we will repeatedly use the function defined below.
 ```{r simulation-function}
 n_obs <- 50
 
-simulate <- function(delta_x, delta_y, k = 1e4, n = n_obs) {
+simulate <- function(delta_x, delta_y, k = 1e5, n = n_obs) {
     Xn <- rt(k, n - 1, sqrt(n) * delta_x)
     Yn <- rt(k, n - 1, sqrt(n) * delta_y)
     Zn <- cbind(Xn, Yn)
@@ -446,10 +446,10 @@ the next section.
 # 5 Scenario (c) revisited
 
 We  revisit scenario  (c), using  a $t$-distribution  with $(n-1)$  degrees of
-freedom instead  of the standard  normal approximation in the  minimax optimal
-tests. For this purpose, we simply redefine the object `quantile_function`.
-
-
+freedom  instead of  the standard  normal approximation  in the  vGvG, minimax
+optimal, and  Bayes optimal tests.   For this  purpose, we adapt  the function
+`vGvG_test`    and     simply    redefine    the     objects    `sample_size`,
+`quantile_function`.
 
 ```{r scenario-d, out.width="80%", dpi=300, fig.align="center"}
 delta_x <- seq(0, .8, length.out = P + 1)
@@ -476,7 +476,7 @@ vGvG_test <- function(Zn, alpha = 0.05) {
     return(out)
 }
 
-sample_size <- as.integer(n_obs)
+sample_size <- n_obs
 quantile_function <- \(t) qt(t, df = n_obs - 1)
 
 ## ###################### ##
@@ -514,7 +514,8 @@ fig_scenario_d <- ggplot(data = pow_scenario_d) +
 
 The use  of the  $t$-distribution approximation has  the expected  effect. The
 type 1 error  is now much closer to  0.05 across the entire range  of the null
-hypothesis parameter space  we consider. Again, the performances  of all tests
+hypothesis parameter space we consider for the vGvG test, minimax optimal test
+and  Bayes optimal  with 0-1  loss function.   The performances  of all  tests
 except the delta method converge by around $\delta_x=0.55$.
 
 
