@@ -10,10 +10,13 @@
 <url><loc>https://achambaz.github.io/mediation.test/reference/index.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/map_01_0.01.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/map_01_0.05.html</loc></url>
+<url><loc>https://achambaz.github.io/mediation.test/reference/map_01_0.05_t50.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/map_quad_0.01.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/map_quad_0.01_0.1.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/map_quad_0.05.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/map_quad_0.05_0.1.html</loc></url>
+<url><loc>https://achambaz.github.io/mediation.test/reference/map_quad_0.05_0.1_t50.html</loc></url>
+<url><loc>https://achambaz.github.io/mediation.test/reference/map_quad_0.05_t50.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/mediation.test-package.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/mediation_test_Bayes.html</loc></url>
 <url><loc>https://achambaz.github.io/mediation.test/reference/mediation_test_minimax.html</loc></url>
