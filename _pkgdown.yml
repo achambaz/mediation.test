@@ -23,8 +23,11 @@ reference:
   contents:
   - compute_map_rejection_probs
   - map_01_0.05
+  - map_01_0.05_t50
   - map_quad_0.05
+  - map_quad_0.05_t50
   - map_quad_0.05_0.1
+  - map_quad_0.05_0.1_t50
   - map_01_0.01
   - map_quad_0.01
   - map_quad_0.01_0.1
