@@ -3,7 +3,7 @@ pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   mediation-test: mediation-test.html
-last_built: 2025-07-16T08:03Z
+last_built: 2025-07-16T09:50Z
 urls:
   reference: https://achambaz.github.io/mediation.test/reference
   article: https://achambaz.github.io/mediation.test/articles
